@@ -10,10 +10,9 @@
 #define STAT_NAME_LEN		32
 #define MAX_PERF_EVENTS		6
 
-#define PERF_STAT_BEGIN(name, events) 						\
+#define PERF_STAT_BEGIN(name, events, event_num) 						\
 	do {									\
 		struct perf_stat *__perf_stat;					\
-		int event_num = sizeof(events) / sizeof(struct perf_event);	\
 		__perf_stat = perf_stat_begin(name, events, event_num);
 
 #define PERF_STAT_END()								\
