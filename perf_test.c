@@ -17,7 +17,8 @@ static struct perf_event g_events[] = {
 
 static struct perf_test g_tests[] = {
 	PERF_TEST("memset", perf_test_memset, "test memset for different memory types"),
-	PERF_TEST("intcal", perf_test_intcal, "test various int calculations")
+	PERF_TEST("intcal", perf_test_intcal, "test various int calculations"),
+	PERF_TEST("bw_mem", perf_test_bw_mem, "lmbench bw_mem test")
 };
 
 int perf_test_memset(struct perf_event *events, int event_num)
@@ -57,16 +58,40 @@ int perf_test_intcal(struct perf_event *events, int event_num)
 	int x, y, z;
 
 	PERF_STAT_BEGIN("x++", events, event_num);
-        for (int i = 0; i < 100000000; i++)
-                x += i * 2;
+	for (int i = 0; i < 100000000; i++)
+		x += i * 2;
 	PERF_STAT_END();
 
 	PERF_STAT_BEGIN("x,y,z++", events, event_num);
-        for (int i = 0; i < 100000000; i++) {
-                x += i * 2;
-                y += i * 2;
-                z += i * 2;
-        }
+	for (int i = 0; i < 100000000; i++) {
+		x += i * 2;
+		y += i * 2;
+		z += i * 2;
+	}
+	PERF_STAT_END();
+
+	return 0;
+}
+
+int perf_test_bw_mem(struct perf_event *events, int event_num)
+{
+	int buf_size = 128 * 1024 * 1024;
+	char *buf = malloc(buf_size);
+	volatile char *p;
+	char *end = buf + buf_size;
+	int sum;
+
+	/* warmup */
+	memset(buf, 0, buf_size);
+
+	PERF_STAT_BEGIN("rd", events, event_num);
+	for (p = buf; p < end; p += 4)
+		sum += *p;
+	PERF_STAT_END();
+
+	PERF_STAT_BEGIN("frd", events, event_num);
+	for (p = buf; p < end; p++)
+		sum += *p;
 	PERF_STAT_END();
 
 	return 0;

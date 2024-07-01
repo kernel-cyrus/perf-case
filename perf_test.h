@@ -16,5 +16,6 @@ struct perf_test {
 
 int perf_test_memset(struct perf_event *events, int event_num);
 int perf_test_intcal(struct perf_event *events, int event_num);
+int perf_test_bw_mem(struct perf_event *events, int event_num);
 
 #endif
