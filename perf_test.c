@@ -9,10 +9,11 @@
 static struct perf_event g_events[] = {
 	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES, "cpu-cycles"},
 	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_INSTRUCTIONS, "instructions"},
+	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_REFERENCES, "cache-refs"},
 	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES, "cache-misses"},
-	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND, "stall-frontend"},
-	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_BACKEND, "stall-backend"},
-	{PERF_TYPE_SOFTWARE, PERF_COUNT_SW_PAGE_FAULTS, "page_faults"}
+	//{PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND, "stall-frontend"},
+	//{PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_BACKEND, "stall-backend"},
+	//{PERF_TYPE_SOFTWARE, PERF_COUNT_SW_PAGE_FAULTS, "page_faults"}
 };
 
 static struct perf_test g_tests[] = {
@@ -77,22 +78,106 @@ int perf_test_bw_mem(struct perf_event *events, int event_num)
 {
 	int buf_size = 128 * 1024 * 1024;
 	char *buf = malloc(buf_size);
-	volatile char *p;
+	char *src = malloc(buf_size);
+	volatile uint8_t *p_8, *s_8;
+	volatile uint32_t *p_32, *s_32;
+	volatile uint64_t *p_64, *s_64;
+	int stride_list[] = {1, 4, 8, 16, 64, 128, 256, 512};
+	int stride;
 	char *end = buf + buf_size;
+	char title[32];
 	int sum;
 
-	/* warmup */
-	memset(buf, 0, buf_size);
-
-	PERF_STAT_BEGIN("rd", events, event_num);
-	for (p = buf; p < end; p += 4)
-		sum += *p;
+	// Warmup
+	PERF_STAT_BEGIN("memset", events, event_num);
+	memset(buf, 0x1, buf_size);
+	memset(src, 0x1, buf_size);
 	PERF_STAT_END();
 
-	PERF_STAT_BEGIN("frd", events, event_num);
-	for (p = buf; p < end; p++)
-		sum += *p;
-	PERF_STAT_END();
+	// RD
+	for (int i = 0; i < sizeof(stride_list) / sizeof(int); i++) {
+		stride = stride_list[i];
+		sprintf(title, "rd-1/%d", stride);
+		PERF_STAT_BEGIN(title, events, event_num);
+		for (p_8 = (uint8_t*)buf; p_8 < (uint8_t*)end; p_8 += stride)
+			sum += *p_8;
+		PERF_STAT_END();
+		
+		if ((int)(stride / 4)) {
+			sprintf(title, "rd-4/%d", stride);
+			PERF_STAT_BEGIN(title, events, event_num);
+			for (p_32 = (uint32_t*)buf; p_32 < (uint32_t*)end; p_32 += stride / 4)
+				sum += *p_32;
+			PERF_STAT_END();
+		}
+	
+		if ((int)(stride / 8)) {
+			sprintf(title, "rd-8/%d", stride);
+			PERF_STAT_BEGIN(title, events, event_num);
+			for (p_64 = (uint64_t*)buf; p_64 < (uint64_t*)end; p_64 += stride / 8)
+				sum += *p_64;
+			PERF_STAT_END();
+		}
+	}
+
+	// WR
+	for (int i = 0; i < sizeof(stride_list) / sizeof(int); i++) {
+		stride = stride_list[i];
+		sprintf(title, "wr-1/%d", stride);
+		PERF_STAT_BEGIN(title, events, event_num);
+		for (p_8 = (uint8_t*)buf; p_8 < (uint8_t*)end; p_8 += stride)
+			*p_8 = 1;
+		PERF_STAT_END();
+		
+		if ((int)(stride / 4)) {
+			sprintf(title, "wr-4/%d", stride);
+			PERF_STAT_BEGIN(title, events, event_num);
+			for (p_32 = (uint32_t*)buf; p_32 < (uint32_t*)end; p_32 += stride / 4)
+				*p_32 = 1;
+			PERF_STAT_END();
+		}
+	
+		if ((int)(stride / 8)) {
+			sprintf(title, "wr-8/%d", stride);
+			PERF_STAT_BEGIN(title, events, event_num);
+			for (p_64 = (uint64_t*)buf; p_64 < (uint64_t*)end; p_64 += stride / 2) {
+				*p_64 = 1;
+				*(p_64 + 1) = 1;
+				*(p_64 + 2) = 1;
+				*(p_64 + 3) = 1;
+			}
+			PERF_STAT_END();
+		}
+	}
+
+	// CP
+	for (int i = 0; i < sizeof(stride_list) / sizeof(int); i++) {
+		stride = stride_list[i];
+		sprintf(title, "cp-1/%d", stride);
+		PERF_STAT_BEGIN(title, events, event_num);
+		for (p_8 = (uint8_t*)buf, s_8 = (uint8_t*)src; p_8 < (uint8_t*)end; p_8 += stride, s_8 += stride)
+			*p_8 = *s_8;
+		PERF_STAT_END();
+		
+		if ((int)(stride / 4)) {
+			sprintf(title, "cp-4/%d", stride);
+			PERF_STAT_BEGIN(title, events, event_num);
+			for (p_32 = (uint32_t*)buf, s_32 = (uint32_t*)src; p_32 < (uint32_t*)end; p_32 += stride, s_32 += stride)
+				*p_32 = *s_32;
+			PERF_STAT_END();
+		}
+	
+		if ((int)(stride / 8)) {
+			sprintf(title, "cp-8/%d", stride);
+			PERF_STAT_BEGIN(title, events, event_num);
+			for (p_64 = (uint64_t*)buf, s_64 = (uint64_t*)src; p_64 < (uint64_t*)end; p_64 += stride, s_64 += stride)
+				*p_64 = *s_64;
+			PERF_STAT_END();
+		}
+	}
+
+	free(src);
+	free(buf);
 
 	return 0;
 }
