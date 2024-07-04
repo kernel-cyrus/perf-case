@@ -6,21 +6,21 @@
 
 #define BUF_SIZE (128 * 1024 * 1024)
 
-static int memset_init(struct perf_case *p_case, int argc, char *argv[])
+static int memset_init(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[])
 {
-	p_case->pri = (void*)malloc(BUF_SIZE);
+	p_case->pri = malloc(BUF_SIZE);
 	if (!p_case->pri)
 		return ERROR;
 	return SUCCESS;
 }
 
-static int memset_exit(struct perf_case *p_case)
+static int memset_exit(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	free(p_case->pri);
 	return SUCCESS;
 }
 
-static void memset_func(struct perf_case *p_case)
+static void memset_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	memset(p_case->pri, 0xFF, BUF_SIZE);
 }
