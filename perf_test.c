@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <sys/mman.h>
 #include "perf_test.h"
-#include "perf_event.h"
+#include "perf_stat.h"
 
 static struct perf_event g_events[] = {
 	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES, "cpu-cycles"},

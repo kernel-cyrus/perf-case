@@ -1,7 +1,7 @@
 #ifndef __PERF_TEST_H
 #define __PERF_TEST_H
 
-#include "perf_event.h"
+#include "perf_stat.h"
 
 typedef int (*perf_test_func)(struct perf_event* events, int event_num);
 
