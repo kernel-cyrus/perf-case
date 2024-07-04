@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = --static -g -O2 -Wall
 TARGET = perf_case
-SRCS = perf_stat.c perf_case.c
+SRCS = perf_stat.c cases/memset.c perf_case.c
 OBJS = $(SRCS:.c=.o)
 
 $(TARGET): $(OBJS)

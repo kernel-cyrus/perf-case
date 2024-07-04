@@ -26,6 +26,7 @@ struct perf_stat {
 	int event_num;
 	struct timespec start;
 	struct timespec end;
+	long duration;
 };
 
 /* easy to use macros */

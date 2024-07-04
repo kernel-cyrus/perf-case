@@ -104,11 +104,16 @@ void perf_stat_begin(struct perf_stat *stat)
 
 void perf_stat_end(struct perf_stat *stat)
 {
+	long secs, nano;
+
 	for (int i = 0; i < stat->event_num; i++)
 		if (stat->event_fds[i] > 0)
 			perf_event_stop(stat->event_fds[i]);
 
 	clock_gettime(CLOCK_MONOTONIC, &stat->end);
+	secs = stat->end.tv_sec - stat->start.tv_sec;
+	nano = stat->end.tv_nsec - stat->start.tv_nsec;
+	stat->duration = secs * 1000000000L + nano;
 
 	for (int i = 0; i < stat->event_num; i++) {
 		if (stat->event_fds[i] > 0) {
@@ -120,17 +125,10 @@ void perf_stat_end(struct perf_stat *stat)
 
 void perf_stat_report(struct perf_stat *stat)
 {
-	int i;
-	long seconds, nano, duration;
-
-	seconds = stat->end.tv_sec - stat->start.tv_sec;
-	nano = stat->end.tv_nsec - stat->start.tv_nsec;
-	duration = seconds * 1000000000L + nano;
-
 	printf("TEST: %s\n", stat->name);
 	printf("-----------------------\n");
-	for (i = 0; i < stat->event_num; i++)
+	for (int i = 0; i < stat->event_num; i++)
 		printf("%*s: %*ld\n", 16, stat->events[i].event_name, 16, stat->event_counts[i]);
 	printf("-----------------------\n");
-	printf("Time spent: %f ms\n\n", (double)duration / 1000000);
+	printf("Time spent: %f ms\n\n", (double)stat->duration / 1000000);
 }
