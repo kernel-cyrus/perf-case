@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <sys/mman.h>
-#include "perf_test.h"
+#include "perf_case.h"
 #include "perf_stat.h"
 
 static struct perf_event g_events[] = {
@@ -16,13 +16,13 @@ static struct perf_event g_events[] = {
 	//{PERF_TYPE_SOFTWARE, PERF_COUNT_SW_PAGE_FAULTS, "page_faults"}
 };
 
-static struct perf_test g_tests[] = {
-	PERF_TEST("memset", perf_test_memset, "test memset for different memory types"),
-	PERF_TEST("intcal", perf_test_intcal, "test various int calculations"),
-	PERF_TEST("bw_mem", perf_test_bw_mem, "lmbench bw_mem test")
+static struct perf_case g_cases[] = {
+	PERF_CASE("memset", perf_case_memset, "case memset for different memory types"),
+	PERF_CASE("intcal", perf_case_intcal, "case various int calculations"),
+	PERF_CASE("bw_mem", perf_case_bw_mem, "lmbench bw_mem case")
 };
 
-int perf_test_memset(struct perf_event *events, int event_num)
+int perf_case_memset(struct perf_event *events, int event_num)
 {
 #define BUF_SIZE (128 * 1024 * 1024)
 	static char buf1[BUF_SIZE];
@@ -54,7 +54,7 @@ int perf_test_memset(struct perf_event *events, int event_num)
 	return 0;
 }
 
-int perf_test_intcal(struct perf_event *events, int event_num)
+int perf_case_intcal(struct perf_event *events, int event_num)
 {
 	int x, y, z;
 
@@ -74,7 +74,7 @@ int perf_test_intcal(struct perf_event *events, int event_num)
 	return 0;
 }
 
-int perf_test_bw_mem(struct perf_event *events, int event_num)
+int perf_case_bw_mem(struct perf_event *events, int event_num)
 {
 	int buf_size = 128 * 1024 * 1024;
 	char *buf = malloc(buf_size);
@@ -185,37 +185,37 @@ int perf_test_bw_mem(struct perf_event *events, int event_num)
 void print_help()
 {
 	int i;
-	int test_num = sizeof(g_tests) / sizeof(struct perf_test);
+	int case_num = sizeof(g_cases) / sizeof(struct perf_case);
 
-	printf("./perf_test <test>\n");
+	printf("./perf_case <case>\n");
 	printf("==========================\n");
-	for (i = 0; i < test_num; i++)
-		printf("%s - %s\n", g_tests[i].name, g_tests[i].desc);
+	for (i = 0; i < case_num; i++)
+		printf("%s - %s\n", g_cases[i].name, g_cases[i].desc);
 }
 
-int run_test(char *test_name)
+int run_case(char *case_name)
 {
 	int i, ret;
-	struct perf_test *p_test;
-	int test_num = sizeof(g_tests) / sizeof(struct perf_test);
+	struct perf_case *p_case;
+	int case_num = sizeof(g_cases) / sizeof(struct perf_case);
 	int event_num = sizeof(g_events) / sizeof(struct perf_event);
 	bool found = false;
 
-	for (i = 0; i < test_num; i++) {
-		p_test = &g_tests[i];
-		if (!strcmp(test_name, p_test->name) || !strcmp(test_name, "all")) {
+	for (i = 0; i < case_num; i++) {
+		p_case = &g_cases[i];
+		if (!strcmp(case_name, p_case->name) || !strcmp(case_name, "all")) {
 			found = true;
-			printf("%s\n", p_test->name);
+			printf("%s\n", p_case->name);
 			printf("=======================\n");
-			printf("%s\n\n", p_test->desc);
-			ret = p_test->func(g_events, event_num);
+			printf("%s\n\n", p_case->desc);
+			ret = p_case->func(g_events, event_num);
 			if (ret < 0)
 				return ret;
 		}
 	}
 
 	if (!found) {
-		printf("ERROR: No test named \"%s\"\n", test_name);
+		printf("ERROR: No case named \"%s\"\n", case_name);
 		exit(0);
 	}
 
@@ -229,7 +229,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	run_test(argv[1]);
+	run_case(argv[1]);
 
 	return 0;
 }
