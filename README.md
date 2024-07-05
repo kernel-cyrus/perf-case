@@ -1,2 +1,2 @@
-# perf-cases
-Linux perf testcases on various simple workloads
+# perf-case
+A simple perf test framework and some interesting cases.
