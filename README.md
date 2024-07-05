@@ -1,2 +1,2 @@
 # perf-case
-A simple perf test framework and some interesting cases.
+A simple perf event test framework and some interesting test cases.
