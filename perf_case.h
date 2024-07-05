@@ -3,6 +3,15 @@
 
 #include "perf_stat.h"
 
+#define PERF_CASE_DEFINE(_name)	\
+	struct perf_case __perf_case_##_name
+
+#define PERF_CASE_DECLARE(_name) \
+	extern struct perf_case __perf_case_##_name
+
+#define PERF_CASE(_name) \
+	&__perf_case_##_name
+
 struct perf_case {
 	const char *name;
 	const char *desc;
@@ -24,5 +33,11 @@ struct perf_run {
 	long min_dur;
 	long avg_dur;
 };
+
+PERF_CASE_DECLARE(memset_malloc);
+PERF_CASE_DECLARE(memset_malloc_x2);
+PERF_CASE_DECLARE(memset_mmap);
+PERF_CASE_DECLARE(memset_static_bss);
+PERF_CASE_DECLARE(memset_static_data);
 
 #endif

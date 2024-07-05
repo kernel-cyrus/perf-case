@@ -12,10 +12,13 @@
 #define SUCCESS			0
 #define ERROR			-1
 
+#define PERF_EVENT(_type, _id, _name) \
+	{.event_name = _name, .type = _type, .event_id = _id}
+
 struct perf_event {
+	const char *event_name;
 	uint32_t type;
 	uint64_t event_id;
-	char event_name[EVENT_NAME_LEN];
 };
 
 struct perf_stat {

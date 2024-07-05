@@ -7,21 +7,21 @@
 #include "perf_stat.h"
 
 static struct perf_event default_events[] = {
-	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES, "cpu-cycles"},
-	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_INSTRUCTIONS, "instructions"},
-	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_REFERENCES, "cache-refs"},
-	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES, "cache-misses"},
-	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND, "stall-frontend"},
-	{PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_BACKEND, "stall-backend"},
-	{PERF_TYPE_SOFTWARE, PERF_COUNT_SW_PAGE_FAULTS, "page-faults"}
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES, "cpu-cycles"),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_INSTRUCTIONS, "instructions"),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_REFERENCES, "cache-refs"),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES, "cache-misses"),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND, "stall-frontend"),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_BACKEND, "stall-backend"),
+	PERF_EVENT(PERF_TYPE_SOFTWARE, PERF_COUNT_SW_PAGE_FAULTS, "page-faults")
 };
 
-extern struct perf_case case_memset;
-extern struct perf_case case_memset_again;
-
 static struct perf_case *perf_cases[] = {
-	&case_memset,
-	&case_memset_again,
+	PERF_CASE(memset_malloc),
+	PERF_CASE(memset_malloc_x2),
+	PERF_CASE(memset_mmap),
+	PERF_CASE(memset_static_bss),
+	PERF_CASE(memset_static_data),
 };
 
 struct perf_case* perf_case_find(char* name)
@@ -140,10 +140,14 @@ void perf_case_report_run(struct perf_run *p_run)
 				p_run->stats[i].event_counts[j]		\
 			);
 	printf("-----------------------\n");
-	printf("finished with %d runs:\n", p_run->stat_num);
-	printf("  min time: %f ms\n", (double)p_run->min_dur / 1000000);
-	printf("  max time: %f ms\n", (double)p_run->max_dur / 1000000);
-	printf("  avg time: %f ms\n", (double)p_run->avg_dur / 1000000);
+	if (p_run->stat_num > 1) {
+		printf("finished with %d runs:\n", p_run->stat_num);
+		printf("  min time: %f ms\n", (double)p_run->min_dur / 1000000);
+		printf("  max time: %f ms\n", (double)p_run->max_dur / 1000000);
+		printf("  avg time: %f ms\n", (double)p_run->avg_dur / 1000000);
+	} else {
+		printf("time: %f ms\n", (double)p_run->avg_dur / 1000000);
+	}
 }
 
 void run_case(char *name, int argc, char **argv)
@@ -189,7 +193,7 @@ void print_help()
 		if (p_case->help) {
 			p_case->help(p_case);
 		} else {
-			printf(" %-16s - %s\n", p_case->name, p_case->desc);
+			printf(" %-20s - %s\n", p_case->name, p_case->desc);
 		}
 	}
 }
