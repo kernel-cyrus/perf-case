@@ -19,7 +19,7 @@ struct perf_case {
 	int  (*exit)(struct perf_case *p_case, struct perf_stat *p_stat);
 	void (*func)(struct perf_case *p_case, struct perf_stat *p_stat);
 	void (*help)(struct perf_case *p_case);
-	void* pri;
+	void* data;
 	struct perf_event *events;
 	int event_num;
 	int inner_stat;

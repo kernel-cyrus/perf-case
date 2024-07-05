@@ -17,21 +17,21 @@ static struct perf_event memset_events[] = {
 
 static int memset_malloc_init(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[])
 {
-	p_case->pri = malloc(DYNAMIC_BUF_SIZE);
-	if (!p_case->pri)
+	p_case->data = malloc(DYNAMIC_BUF_SIZE);
+	if (!p_case->data)
 		return ERROR;
 	return SUCCESS;
 }
 
 static int memset_malloc_exit(struct perf_case *p_case, struct perf_stat *p_stat)
 {
-	free(p_case->pri);
+	free(p_case->data);
 	return SUCCESS;
 }
 
 static void memset_malloc_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
-	memset(p_case->pri, 0xFF, DYNAMIC_BUF_SIZE);
+	memset(p_case->data, 0xFF, DYNAMIC_BUF_SIZE);
 }
 
 PERF_CASE_DEFINE(memset_malloc) = {
@@ -46,9 +46,9 @@ PERF_CASE_DEFINE(memset_malloc) = {
 
 static void memset_malloc_func_x2(struct perf_case *p_case, struct perf_stat *p_stat)
 {
-	memset(p_case->pri, 0xFF, DYNAMIC_BUF_SIZE);
+	memset(p_case->data, 0xFF, DYNAMIC_BUF_SIZE);
 	perf_stat_begin(p_stat);
-	memset(p_case->pri, 0xFF, DYNAMIC_BUF_SIZE);
+	memset(p_case->data, 0xFF, DYNAMIC_BUF_SIZE);
 	perf_stat_end(p_stat);
 }
 
@@ -65,21 +65,21 @@ PERF_CASE_DEFINE(memset_malloc_x2) = {
 
 static int memset_mmap_init(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[])
 {
-	p_case->pri = mmap(NULL, DYNAMIC_BUF_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-	if (!p_case->pri)
+	p_case->data = mmap(NULL, DYNAMIC_BUF_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+	if (!p_case->data)
 		return ERROR;
 	return SUCCESS;
 }
 
 static int memset_mmap_exit(struct perf_case *p_case, struct perf_stat *p_stat)
 {
-	munmap(p_case->pri, DYNAMIC_BUF_SIZE);
+	munmap(p_case->data, DYNAMIC_BUF_SIZE);
 	return SUCCESS;
 }
 
 static void memset_mmap_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
-	memset(p_case->pri, 0xFF, DYNAMIC_BUF_SIZE);
+	memset(p_case->data, 0xFF, DYNAMIC_BUF_SIZE);
 }
 
 PERF_CASE_DEFINE(memset_mmap) = {
