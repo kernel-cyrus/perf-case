@@ -13,6 +13,7 @@ struct perf_case {
 	void* pri;
 	struct perf_event *events;
 	int event_num;
+	int inner_stat;
 };
 
 struct perf_run {

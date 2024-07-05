@@ -16,10 +16,12 @@ static struct perf_event default_events[] = {
 	{PERF_TYPE_SOFTWARE, PERF_COUNT_SW_PAGE_FAULTS, "page-faults"}
 };
 
-extern struct perf_case __perf_case_memset;
+extern struct perf_case case_memset;
+extern struct perf_case case_memset_again;
 
 static struct perf_case *perf_cases[] = {
-	&__perf_case_memset,
+	&case_memset,
+	&case_memset_again,
 };
 
 struct perf_case* perf_case_find(char* name)
@@ -101,9 +103,13 @@ int perf_case_run(struct perf_run* p_run, int argc, char **argv)
 				return ERROR;
 		}
 
-		perf_stat_begin(&p_run->stats[i]);
-		p_run->p_case->func(p_case, p_stat);
-		perf_stat_end(&p_run->stats[i]);
+		if (!p_case->inner_stat)
+			perf_stat_begin(&p_run->stats[i]);
+
+		p_case->func(p_case, p_stat);
+
+		if (!p_case->inner_stat)
+			perf_stat_end(&p_run->stats[i]);
 
 		if (p_case->exit) {
 			err = p_case->exit(p_case, p_stat);
@@ -135,9 +141,9 @@ void perf_case_report_run(struct perf_run *p_run)
 			);
 	printf("-----------------------\n");
 	printf("finished with %d runs:\n", p_run->stat_num);
-	printf("    min time: %f ms\n", (double)p_run->min_dur / 1000000);
-	printf("    max time: %f ms\n", (double)p_run->max_dur / 1000000);
-	printf("    avg time: %f ms\n", (double)p_run->avg_dur / 1000000);
+	printf("  min time: %f ms\n", (double)p_run->min_dur / 1000000);
+	printf("  max time: %f ms\n", (double)p_run->max_dur / 1000000);
+	printf("  avg time: %f ms\n", (double)p_run->avg_dur / 1000000);
 }
 
 void run_case(char *name, int argc, char **argv)
@@ -183,7 +189,7 @@ void print_help()
 		if (p_case->help) {
 			p_case->help(p_case);
 		} else {
-			printf("%s - %s\n", p_case->name, p_case->desc);
+			printf(" %-16s - %s\n", p_case->name, p_case->desc);
 		}
 	}
 }
