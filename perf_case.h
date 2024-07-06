@@ -39,5 +39,23 @@ PERF_CASE_DECLARE(memset_malloc_x2);
 PERF_CASE_DECLARE(memset_mmap);
 PERF_CASE_DECLARE(memset_static_bss);
 PERF_CASE_DECLARE(memset_static_data);
+PERF_CASE_DECLARE(membw_rd_1);
+PERF_CASE_DECLARE(membw_rd_4);
+PERF_CASE_DECLARE(membw_rd_8);
+PERF_CASE_DECLARE(membw_rd_1_4x);
+PERF_CASE_DECLARE(membw_rd_4_4x);
+PERF_CASE_DECLARE(membw_rd_8_4x);
+PERF_CASE_DECLARE(membw_wr_1);
+PERF_CASE_DECLARE(membw_wr_4);
+PERF_CASE_DECLARE(membw_wr_8);
+PERF_CASE_DECLARE(membw_wr_1_4x);
+PERF_CASE_DECLARE(membw_wr_4_4x);
+PERF_CASE_DECLARE(membw_wr_8_4x);
+PERF_CASE_DECLARE(membw_cp_1);
+PERF_CASE_DECLARE(membw_cp_4);
+PERF_CASE_DECLARE(membw_cp_8);
+PERF_CASE_DECLARE(membw_cp_1_4x);
+PERF_CASE_DECLARE(membw_cp_4_4x);
+PERF_CASE_DECLARE(membw_cp_8_4x);
 
 #endif
