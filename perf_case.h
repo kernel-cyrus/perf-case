@@ -12,6 +12,9 @@
 #define PERF_CASE(_name) \
 	&__perf_case_##_name
 
+#define PERF_CASE_OPTION_HELP(_short, _long, _desc) \
+	printf("    %s, %-14s %s\n", _short, _long, _desc);
+
 struct perf_case {
 	const char *name;
 	const char *desc;

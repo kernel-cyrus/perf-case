@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <getopt.h>
 
 #include "../perf_stat.h"
 #include "../perf_case.h"
@@ -22,9 +23,24 @@ static struct perf_event membw_events[] = {
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES, "cache-misses"),
 };
 
+static struct option membw_options[] = {
+	{"bufsize",    optional_argument, NULL, 'b' },
+	{"stride",     optional_argument, NULL, 's' },
+	{"iterations", optional_argument, NULL, 'i' },
+	{0, 0, 0, 0}
+};
+
+static void membw_help(struct perf_case *p_case)
+{
+	PERF_CASE_OPTION_HELP("-b", "--bufsize",    "Test buffer size.(bytes)");
+	PERF_CASE_OPTION_HELP("-s", "--sride",      "Test stride.(bytes)");
+	PERF_CASE_OPTION_HELP("-i", "--iterations", "Iteration loops.");
+}
+
 static int membw_init(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[])
 {
 	struct membw_data *p_data;
+	int opt, opt_idx;
 	
 	p_case->data = malloc(sizeof(struct membw_data));
 	if (!p_case->data)
@@ -35,6 +51,22 @@ static int membw_init(struct perf_case *p_case, struct perf_stat *p_stat, int ar
 	p_data->buf_size = BUF_SIZE;
 	p_data->stride = 1;
 
+	while ((opt = getopt_long(argc, argv, "b:s:i:", membw_options, &opt_idx)) != -1) {
+		switch (opt) {
+		case 'b':
+			p_data->buf_size = atoi(optarg);
+			break;
+		case 's':
+			p_data->stride = atoi(optarg);
+			break;
+		case 'i':
+			break;
+		default:
+			membw_help(p_case);
+			exit(0);
+		}
+	}
+
 	p_data->buf = malloc(p_data->buf_size);
 	if (!p_data->buf)
 		goto ERR_EXIT_1;
@@ -43,8 +75,8 @@ static int membw_init(struct perf_case *p_case, struct perf_stat *p_stat, int ar
 	if (!p_data->src)
 		goto ERR_EXIT_2;
 
-	memset(p_data->buf, 0x1, BUF_SIZE);
-	memset(p_data->src, 0x1, BUF_SIZE);
+	memset(p_data->buf, 0x1, p_data->buf_size);
+	memset(p_data->src, 0x1, p_data->buf_size);
 
 	p_data->buf_end = (char*)p_data->buf + p_data->buf_size;
 	p_data->src_end = (char*)p_data->src + p_data->buf_size;
@@ -282,27 +314,28 @@ static void membw_cp_8_4x(struct perf_case *p_case, struct perf_stat *p_stat)
 		.desc = _desc,							\
 		.init = membw_init,						\
 		.exit = membw_exit,						\
+		.help = membw_help,						\
 		.func = _name,							\
 		.events = membw_events,						\
 		.event_num = sizeof(membw_events) / sizeof(struct perf_event),	\
 		.inner_stat = true						\
 	};
 
-DEFINE_MEMBW_CASE(membw_rd_1,    "read a memory buffer.   (8 bit)");
-DEFINE_MEMBW_CASE(membw_rd_4,    "read a memory buffer.  (32 bit)");
-DEFINE_MEMBW_CASE(membw_rd_8,    "read a memory buffer.  (64 bit)");
-DEFINE_MEMBW_CASE(membw_rd_1_4x, "read a memory buffer.   (8 bit) * 4");
-DEFINE_MEMBW_CASE(membw_rd_4_4x, "read a memory buffer.  (32 bit) * 4");
-DEFINE_MEMBW_CASE(membw_rd_8_4x, "read a memory buffer.  (64 bit) * 4");
-DEFINE_MEMBW_CASE(membw_wr_1,    "write a memory buffer.  (8 bit)");
-DEFINE_MEMBW_CASE(membw_wr_4,    "write a memory buffer. (32 bit)");
-DEFINE_MEMBW_CASE(membw_wr_8,    "write a memory buffer. (64 bit)");
-DEFINE_MEMBW_CASE(membw_wr_1_4x, "write a memory buffer.  (8 bit) * 4");
-DEFINE_MEMBW_CASE(membw_wr_4_4x, "write a memory buffer. (32 bit) * 4");
-DEFINE_MEMBW_CASE(membw_wr_8_4x, "write a memory buffer. (64 bit) * 4");
-DEFINE_MEMBW_CASE(membw_cp_1,    "copy a memory buffer.   (8 bit)");
-DEFINE_MEMBW_CASE(membw_cp_4,    "copy a memory buffer.  (32 bit)");
-DEFINE_MEMBW_CASE(membw_cp_8,    "copy a memory buffer.  (64 bit)");
-DEFINE_MEMBW_CASE(membw_cp_1_4x, "copy a memory buffer.   (8 bit) * 4");
-DEFINE_MEMBW_CASE(membw_cp_4_4x, "copy a memory buffer.  (32 bit) * 4");
-DEFINE_MEMBW_CASE(membw_cp_8_4x, "copy a memory buffer.  (64 bit) * 4");
+DEFINE_MEMBW_CASE(membw_rd_1,    "read a memory buffer.(8bit)");
+DEFINE_MEMBW_CASE(membw_rd_4,    "read a memory buffer.(32bit)");
+DEFINE_MEMBW_CASE(membw_rd_8,    "read a memory buffer.(64bit)");
+DEFINE_MEMBW_CASE(membw_rd_1_4x, "read a memory buffer.(8bit) * 4");
+DEFINE_MEMBW_CASE(membw_rd_4_4x, "read a memory buffer.(32bit) * 4");
+DEFINE_MEMBW_CASE(membw_rd_8_4x, "read a memory buffer.(64bit) * 4");
+DEFINE_MEMBW_CASE(membw_wr_1,    "write a memory buffer.(8bit)");
+DEFINE_MEMBW_CASE(membw_wr_4,    "write a memory buffer.(32bit)");
+DEFINE_MEMBW_CASE(membw_wr_8,    "write a memory buffer.(64bit)");
+DEFINE_MEMBW_CASE(membw_wr_1_4x, "write a memory buffer.(8bit) * 4");
+DEFINE_MEMBW_CASE(membw_wr_4_4x, "write a memory buffer.(32bit) * 4");
+DEFINE_MEMBW_CASE(membw_wr_8_4x, "write a memory buffer.(64bit) * 4");
+DEFINE_MEMBW_CASE(membw_cp_1,    "copy a memory buffer.(8bit)");
+DEFINE_MEMBW_CASE(membw_cp_4,    "copy a memory buffer.(32bit)");
+DEFINE_MEMBW_CASE(membw_cp_8,    "copy a memory buffer.(64bit)");
+DEFINE_MEMBW_CASE(membw_cp_1_4x, "copy a memory buffer.(8bit) * 4");
+DEFINE_MEMBW_CASE(membw_cp_4_4x, "copy a memory buffer.(32bit) * 4");
+DEFINE_MEMBW_CASE(membw_cp_8_4x, "copy a memory buffer.(64bit) * 4");

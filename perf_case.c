@@ -149,7 +149,6 @@ int perf_case_run(struct perf_run* p_run, int argc, char **argv)
 
 void perf_case_report_run(struct perf_run *p_run)
 {
-	printf("Case: %s\n", p_run->p_case->name);
 	printf("-----------------------\n");
 	for (int i = 0; i < p_run->stat_num; i++)
 		for (int j = 0; j < p_run->stats[i].event_num; j++)
@@ -168,23 +167,21 @@ void perf_case_report_run(struct perf_run *p_run)
 	}
 }
 
-void run_case(char *name, int argc, char **argv)
+void run_case(struct perf_case *p_case, int argc, char **argv)
 {
 	int err;
-	struct perf_case *p_case;
 	struct perf_run *p_run;
 
-	p_case = perf_case_find(name);
-	if (!p_case) {
-		printf("ERROR: No case named \"%s\"\n", name);
-		exit(0);
-	}
+	if (!p_case)
+		return;
 
 	p_run = perf_case_create_run(p_case);
 	if (!p_run) {
 		printf("ERROR: Failed to create a run.\n");
 		exit(0);
 	}
+
+	printf("%s\n", p_case->name);
 
 	err = perf_case_run(p_run, argc, argv);
 	if (err) {
@@ -197,33 +194,82 @@ void run_case(char *name, int argc, char **argv)
 	perf_case_destroy_run(p_run);
 }
 
-void print_help()
+static void print_help()
 {
 	struct perf_case *p_case;
-
 	int case_num = sizeof(perf_cases) / sizeof(struct perf_case*);
 
-	printf("./perf_case <case>\n");
+	printf("\n");
+	printf("Perf-Case\n");
 	printf("==========================\n");
-
+	printf("A simple perf event test framework and some interesting testcases.\n\n");
+	printf("Usage:\n");
+	printf("    ./perf_case [case] [options]      // run a case\n");
+	printf("    ./perf_case -h                    // help\n");
+	printf("    ./perf_case -h [case]             // help for each case\n\n");
+	printf("Cases Available:\n");
 	for (int i = 0; i < case_num; i++) {
 		p_case = perf_cases[i];
-		if (p_case->help) {
-			p_case->help(p_case);
-		} else {
-			printf(" %-20s - %s\n", p_case->name, p_case->desc);
-		}
+		printf("    %-20s - %s\n", p_case->name, p_case->desc);
 	}
+	printf("\n");
+}
+
+static void print_case_help(struct perf_case *p_case)
+{
+	printf("%s\n", p_case->name);
+	printf("==========================\n");
+	printf("%s\n\n", p_case->desc);
+	printf("Usage:\n");
+	printf("    ./perf_case %s [options]\n", p_case->name);
+	printf("Options:\n");
+	if (p_case->help) {
+		p_case->help(p_case);
+	} else {
+		printf("    [no options]\n");
+	}
+	printf("\n");
 }
 
 int main(int argc, char **argv)
 {
+	char *case_name;
+	struct perf_case *p_case;
+
 	if (argc < 2) {
 		print_help();
 		return 0;
 	}
 
-	run_case(argv[1], argc, argv);
+	if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
+		if (argc == 2 || argv[2][0] == '-') {
+			print_help();
+			return 0;
+		}
+		case_name = argv[2];
+		p_case = perf_case_find(case_name);
+		if (!p_case) {
+			printf("ERROR: No case named \"%s\"\n", case_name);
+			return 0;
+		}
+		print_case_help(p_case);
+		return 0;
+	}
+
+	case_name = argv[1];
+
+	p_case = perf_case_find(case_name);
+	if (!p_case) {
+		printf("ERROR: No case named \"%s\"\n", case_name);
+		return 0;
+	}
+
+	if (argc > 2 && (!strcmp(argv[2], "-h") || !strcmp(argv[2], "--help"))) {
+		print_case_help(p_case);
+		return 0;
+	}
+
+	run_case(p_case, argc, argv);
 
 	return 0;
 }
