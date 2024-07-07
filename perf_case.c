@@ -182,6 +182,7 @@ void run_case(struct perf_case *p_case, int argc, char **argv)
 	}
 
 	printf("%s\n", p_case->name);
+	printf("-----------------------\n");
 
 	err = perf_case_run(p_run, argc, argv);
 	if (err) {
