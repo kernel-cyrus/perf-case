@@ -104,17 +104,23 @@ static int memlat_exit(struct perf_case *p_case, struct perf_stat *p_stat)
 static void print_latency(int buf_size, int count, int iterations, struct perf_stat *p_stat)
 {
 	double size_mb = (double)buf_size / 1024 / 1024;
-	int latency_ns = p_stat->duration / count;
+	double latency_ns = (double)p_stat->duration / count;
 	printf("bufsize: %.6f MB\n", size_mb);
 	printf("iterations: %d\n", iterations);
 	printf("total ops: %d\n", count);
-	printf("latency: %d ns\n", latency_ns);
+	printf("latency: %.3f ns\n", latency_ns);
 }
 
 #define	DO_1	p = (char **)*p;
 #define	DO_8	DO_1  DO_1  DO_1  DO_1  DO_1  DO_1  DO_1  DO_1
 #define	DO_64	DO_8  DO_8  DO_8  DO_8  DO_8  DO_8  DO_8  DO_8
-#define	DO_128	DO_64 DO_64 DO_64 DO_64 DO_64 DO_64 DO_64 DO_64
+#define	DO_128	DO_64 DO_64
+
+void use_pointer(void *pointer)
+{
+	static long long use = 0;
+	use += (long long)pointer;
+}
 
 static void memlat_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
@@ -132,6 +138,7 @@ static void memlat_func(struct perf_case *p_case, struct perf_stat *p_stat)
 	}
 	perf_stat_end(p_stat);
 
+	use_pointer(p); // to avoid compiler optimization
 	print_latency(p_data->buf_size, 128 * round * p_data->iterations, p_data->iterations, p_stat);
 }
 
