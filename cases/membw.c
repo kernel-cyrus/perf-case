@@ -33,8 +33,8 @@ static struct option membw_options[] = {
 
 static void membw_help(struct perf_case *p_case)
 {
-	PERF_CASE_OPTION_HELP("-b", "--bufsize",    "Test buffer size.(bytes)");
-	PERF_CASE_OPTION_HELP("-s", "--sride",      "Test stride.(bytes)");
+	PERF_CASE_OPTION_HELP("-b", "--bufsize",    "Test buffer size. (bytes)");
+	PERF_CASE_OPTION_HELP("-s", "--sride",      "Test stride. (bytes)");
 	PERF_CASE_OPTION_HELP("-i", "--iterations", "Iteration loops.");
 }
 
@@ -97,6 +97,7 @@ ERR_EXIT_1:
 static int membw_exit(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	struct membw_data *p_data = (struct membw_data*)p_case->data;
+	free(p_data->src);
 	free(p_data->buf);
 	free(p_case->data);
 	p_case->data = NULL;
@@ -334,21 +335,21 @@ static void membw_cp_8_4x(struct perf_case *p_case, struct perf_stat *p_stat)
 		.inner_stat = true						\
 	};
 
-DEFINE_MEMBW_CASE(membw_rd_1,    "read a memory buffer.(8bit)");
-DEFINE_MEMBW_CASE(membw_rd_4,    "read a memory buffer.(32bit)");
-DEFINE_MEMBW_CASE(membw_rd_8,    "read a memory buffer.(64bit)");
-DEFINE_MEMBW_CASE(membw_rd_1_4x, "read a memory buffer.(8bit) * 4");
-DEFINE_MEMBW_CASE(membw_rd_4_4x, "read a memory buffer.(32bit) * 4");
-DEFINE_MEMBW_CASE(membw_rd_8_4x, "read a memory buffer.(64bit) * 4");
-DEFINE_MEMBW_CASE(membw_wr_1,    "write a memory buffer.(8bit)");
-DEFINE_MEMBW_CASE(membw_wr_4,    "write a memory buffer.(32bit)");
-DEFINE_MEMBW_CASE(membw_wr_8,    "write a memory buffer.(64bit)");
-DEFINE_MEMBW_CASE(membw_wr_1_4x, "write a memory buffer.(8bit) * 4");
-DEFINE_MEMBW_CASE(membw_wr_4_4x, "write a memory buffer.(32bit) * 4");
-DEFINE_MEMBW_CASE(membw_wr_8_4x, "write a memory buffer.(64bit) * 4");
-DEFINE_MEMBW_CASE(membw_cp_1,    "copy a memory buffer.(8bit)");
-DEFINE_MEMBW_CASE(membw_cp_4,    "copy a memory buffer.(32bit)");
-DEFINE_MEMBW_CASE(membw_cp_8,    "copy a memory buffer.(64bit)");
-DEFINE_MEMBW_CASE(membw_cp_1_4x, "copy a memory buffer.(8bit) * 4");
-DEFINE_MEMBW_CASE(membw_cp_4_4x, "copy a memory buffer.(32bit) * 4");
-DEFINE_MEMBW_CASE(membw_cp_8_4x, "copy a memory buffer.(64bit) * 4");
+DEFINE_MEMBW_CASE(membw_rd_1,    "read a memory buffer. (8bit)");
+DEFINE_MEMBW_CASE(membw_rd_4,    "read a memory buffer. (32bit)");
+DEFINE_MEMBW_CASE(membw_rd_8,    "read a memory buffer. (64bit)");
+DEFINE_MEMBW_CASE(membw_rd_1_4x, "read a memory buffer. (8bit) * 4");
+DEFINE_MEMBW_CASE(membw_rd_4_4x, "read a memory buffer. (32bit) * 4");
+DEFINE_MEMBW_CASE(membw_rd_8_4x, "read a memory buffer. (64bit) * 4");
+DEFINE_MEMBW_CASE(membw_wr_1,    "write a memory buffer. (8bit)");
+DEFINE_MEMBW_CASE(membw_wr_4,    "write a memory buffer. (32bit)");
+DEFINE_MEMBW_CASE(membw_wr_8,    "write a memory buffer. (64bit)");
+DEFINE_MEMBW_CASE(membw_wr_1_4x, "write a memory buffer. (8bit) * 4");
+DEFINE_MEMBW_CASE(membw_wr_4_4x, "write a memory buffer. (32bit) * 4");
+DEFINE_MEMBW_CASE(membw_wr_8_4x, "write a memory buffer. (64bit) * 4");
+DEFINE_MEMBW_CASE(membw_cp_1,    "copy a memory buffer. (8bit)");
+DEFINE_MEMBW_CASE(membw_cp_4,    "copy a memory buffer. (32bit)");
+DEFINE_MEMBW_CASE(membw_cp_8,    "copy a memory buffer. (64bit)");
+DEFINE_MEMBW_CASE(membw_cp_1_4x, "copy a memory buffer. (8bit) * 4");
+DEFINE_MEMBW_CASE(membw_cp_4_4x, "copy a memory buffer. (32bit) * 4");
+DEFINE_MEMBW_CASE(membw_cp_8_4x, "copy a memory buffer. (64bit) * 4");

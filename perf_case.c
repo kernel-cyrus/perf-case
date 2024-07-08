@@ -40,6 +40,7 @@ static struct perf_case *perf_cases[] = {
 	PERF_CASE(membw_cp_1_4x),
 	PERF_CASE(membw_cp_4_4x),
 	PERF_CASE(membw_cp_8_4x),
+	PERF_CASE(memlat_random),
 };
 
 struct perf_case* perf_case_find(char* name)
