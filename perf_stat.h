@@ -16,7 +16,7 @@
 	{.event_name = _name, .type = _type, .event_id = _id, .event_path = NULL}
 
 #define PERF_RAW_EVENT(_path, _name) \
-	{.event_name = _name, .type = PERF_TYPE_RAW, event_id = 0, .event_path = _path}
+	{.event_name = _name, .type = PERF_TYPE_RAW, .event_id = 0, .event_path = _path}
 
 struct perf_event {
 	char *event_name;

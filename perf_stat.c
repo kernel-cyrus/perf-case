@@ -76,13 +76,17 @@ void perf_simple_stat()
 
 int perf_stat_init_raw_event(struct perf_event *event)
 {
-	static char file_path[128];
 	FILE *file;
 	char *device_name, *file_name;
 	char file_buf[16];
-	int file_len, read_len, n_bytes;
+	static char file_path[128];
+	static char event_path[128];
+	int n_bytes;
 
-	device_name = strtok(event->event_path, "/");
+	memset(event_path, 0, sizeof(event_path));
+	strncpy(event_path, event->event_path, sizeof(event_path) - 1);
+
+	device_name = strtok(event_path, "/");
 	if (!device_name)
 		return ERROR;
 
@@ -90,27 +94,19 @@ int perf_stat_init_raw_event(struct perf_event *event)
 	if (!file_name)
 		return ERROR;
 
-	sprintf(file_path, "/sys/bus/even_source/device/%s/events/%s", device_name, file_name);
+	sprintf(file_path, "/sys/bus/event_source/devices/%s/events/%s", device_name, file_name);
 
 	file = fopen(file_path, "r");
 	if (file == NULL)
 		return ERROR;
 
-	fseek(file, 0, SEEK_END);
-	file_len = ftell(file);
-	fseek(file, 6, SEEK_SET);
-
-	read_len = file_len - 6;
-	if (read_len <= 0 || read_len >= sizeof(file_buf))
-		return ERROR;
-
-	n_bytes = fread(file_buf, 1, read_len, file);
+	n_bytes = fread(file_buf, 1, sizeof(file_buf) - 1, file);
 	if (!n_bytes)
 		return ERROR;
 
-	file_buf[read_len] = '\0';
+	file_buf[n_bytes] = '\0';
 
-	event->event_id = strtol(file_buf, NULL, 16);
+	sscanf(file_buf, "event=%lX", &event->event_id);
 
 	return SUCCESS;
 }
