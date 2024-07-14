@@ -79,7 +79,7 @@ struct perf_run* perf_case_create_run(struct perf_case *p_case)
 	p_run = malloc(sizeof(struct perf_run));
 	memset(p_run, 0, sizeof(struct perf_run));
 
-	if (p_case->events) {
+	if (p_case->events && !opt_all_events) {
 		events = p_case->events;
 		event_num = p_case->event_num;
 	} else {
@@ -332,9 +332,12 @@ static void init_opts(struct perf_case *p_case, int argc, char **argv)
 			printf("Run on CPU: %d\n", opt_cpu);
 			break;
 		case 'e':
-			if (!strcmp(optarg, "all"))
-				opt_all_events = 1;
-			printf("events: %d\n", opt_all_events);
+			if (strcmp(optarg, "all")) {
+				printf("ERROR: Invalid parameter \"%s\"\n", optarg);
+				exit(0);
+			}
+			opt_all_events = 1;
+			printf("All events enabled\n");
 			break;
 		default:
 			if (!p_case->getopt(p_case, opt))
