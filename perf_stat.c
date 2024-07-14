@@ -108,9 +108,6 @@ int perf_stat_init_raw_event(struct perf_event *event)
 
 	sscanf(file_buf, "event=%lX", &event->event_id);
 
-	if (!event->event_name)
-		event->event_name = event->event_path + (file_name - event_path);
-
 	return SUCCESS;
 }
 

@@ -24,27 +24,9 @@ static struct perf_event default_events[] = {
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_INSTRUCTIONS, "instructions"),
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_REFERENCES, "cache-refs"),
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES, "cache-misses"),
-	PERF_EVENT(PERF_TYPE_SOFTWARE, PERF_COUNT_SW_PAGE_FAULTS, "page-faults"),
-	PERF_RAW_EVENT("armv8_pmuv3/stall", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/stall_backend", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/stall_backend_mem", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/stall_frontend", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/stall_slot", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/stall_slot_backend", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/stall_slot_frontend", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/mem_access", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/dtlb_walk", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l1d_tlb", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l1d_tlb_refill", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l2d_tlb", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l2d_tlb_refill", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l1d_cache", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l1d_cache_refill", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l2d_cache", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l2d_cache_refill", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l3d_cache", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l3d_cache_refill", NULL),
-	PERF_RAW_EVENT("armv8_pmuv3/l1d_tlb", NULL),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND, "stall-frontend"),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_BACKEND, "stall-backend"),
+	PERF_EVENT(PERF_TYPE_SOFTWARE, PERF_COUNT_SW_PAGE_FAULTS, "page-faults")
 };
 
 static struct perf_case *perf_cases[] = {
@@ -184,7 +166,7 @@ void perf_case_report_run(struct perf_run *p_run)
 	printf("-----------------------\n");
 	for (int i = 0; i < p_run->stat_num; i++)
 		for (int j = 0; j < p_run->stats[i].event_num; j++)
-			printf("%20s: %16ld\n",				\
+			printf("%16s: %16ld\n",				\
 				p_run->stats[i].events[j].event_name,	\
 				p_run->stats[i].event_counts[j]		\
 			);
