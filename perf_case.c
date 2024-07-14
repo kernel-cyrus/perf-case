@@ -1,7 +1,11 @@
+#define _GNU_SOURCE
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <math.h>
+#include <sched.h>
 #include <sys/mman.h>
 #include "perf_case.h"
 #include "perf_stat.h"
@@ -276,6 +280,17 @@ static void print_case_help(struct perf_case *p_case)
 	printf("\n");
 }
 
+static int set_cpu(int cpu)
+{
+	pid_t pid = getpid();
+	cpu_set_t mask;
+
+	CPU_ZERO(&mask);
+	CPU_SET(cpu, &mask);
+
+	return sched_setaffinity(pid, sizeof(mask), &mask);
+}
+
 static void init_opts(struct perf_case *p_case, int argc, char **argv)
 {
 	struct option *opts;
@@ -283,6 +298,7 @@ static void init_opts(struct perf_case *p_case, int argc, char **argv)
 	int opt, opt_idx;
 	int opt_num, def_num;
 	int i, j;
+	int err;
 
 	def_num = sizeof(default_options) / sizeof(struct perf_option);
 	opt_num = def_num + p_case->opts_num;
@@ -308,7 +324,12 @@ static void init_opts(struct perf_case *p_case, int argc, char **argv)
 			exit(0);
 		case 'c':
 			opt_cpu = atoi(optarg);
-			printf("cpu: %d\n", opt_cpu);
+			err = set_cpu(opt_cpu);
+			if (err) {
+				printf("ERROR: Set cpu affinity failed.\n");
+				exit(0);
+			}
+			printf("Run on CPU: %d\n", opt_cpu);
 			break;
 		case 'e':
 			if (!strcmp(optarg, "all"))
@@ -318,7 +339,7 @@ static void init_opts(struct perf_case *p_case, int argc, char **argv)
 		default:
 			if (!p_case->getopt(p_case, opt))
 				break;
-			printf("ERROR: invalid parameter, please run \"./perf_case -h\" for help.\n");
+			printf("ERROR: Invalid parameter, please run \"./perf_case -h\" for help.\n");
 			exit(0);
 		}
 	}
