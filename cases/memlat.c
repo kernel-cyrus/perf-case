@@ -15,21 +15,32 @@ struct memlat_data {
 	int iterations;
 };
 
+static int opt_buf_size = BUF_SIZE;
+static int opt_iterations = 1;
+
+static struct perf_option memlat_opts[] = {
+	{{"bufsize",    optional_argument, NULL, 'b' }, "b:", "Test buffer size. (bytes)"},
+	{{"iterations", optional_argument, NULL, 'i' }, "i:", "Iteration loops."},
+};
+
 static struct perf_event memlat_events[] = {
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_REFERENCES, "cache-refs"),
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES, "cache-misses"),
 };
 
-static struct option memlat_options[] = {
-	{"bufsize",    optional_argument, NULL, 'b' },
-	{"iterations", optional_argument, NULL, 'i' },
-	{0, 0, 0, 0}
-};
-
-static void memlat_help(struct perf_case *p_case)
+static int memlat_getopt(struct perf_case* p_case, int opt)
 {
-	PERF_CASE_OPTION_HELP("-b", "--bufsize",    "Test buffer size. (bytes)");
-	PERF_CASE_OPTION_HELP("-i", "--iterations", "Iteration loops.");
+	switch (opt) {
+	case 'b':
+		opt_buf_size = atoi(optarg);
+		break;
+	case 'i':
+		opt_iterations = atoi(optarg);
+		break;
+	default:
+		return ERROR;
+	}
+	return SUCCESS;
 }
 
 static void init_random_buf(char **buf, int buf_size)
@@ -53,30 +64,15 @@ static void init_random_buf(char **buf, int buf_size)
 static int memlat_init(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[])
 {
 	struct memlat_data *p_data;
-	int opt, opt_idx;
-	
+
 	p_case->data = malloc(sizeof(struct memlat_data));
 	if (!p_case->data)
 		return ERROR;
 
 	p_data = (struct memlat_data*)p_case->data;
 
-	p_data->buf_size = BUF_SIZE;
-	p_data->iterations = 1;
-
-	while ((opt = getopt_long(argc, argv, "b:s:i:", memlat_options, &opt_idx)) != -1) {
-		switch (opt) {
-		case 'b':
-			p_data->buf_size = atoi(optarg);
-			break;
-		case 'i':
-			p_data->iterations = atoi(optarg);
-			break;
-		default:
-			memlat_help(p_case);
-			exit(0);
-		}
-	}
+	p_data->buf_size   = opt_buf_size;
+	p_data->iterations = opt_iterations;
 
 	p_data->buf = malloc(p_data->buf_size);
 	if (!p_data->buf)
@@ -147,8 +143,10 @@ PERF_CASE_DEFINE(memlat_random) = {
 	.desc = "memory random access latnecy.",
 	.init = memlat_init,
 	.exit = memlat_exit,
-	.help = memlat_help,
 	.func = memlat_func,
+	.getopt = memlat_getopt,
+	.opts = memlat_opts,
+	.opts_num = sizeof(memlat_opts) / sizeof(struct perf_option),
 	.events = memlat_events,
 	.event_num = sizeof(memlat_events) / sizeof(struct perf_event),
 	.inner_stat = true

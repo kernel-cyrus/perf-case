@@ -1,6 +1,8 @@
 #ifndef __PERF_CASE_H
 #define __PERF_CASE_H
 
+#include <getopt.h>
+
 #include "perf_stat.h"
 
 #define PERF_CASE_DEFINE(_name)	\
@@ -12,17 +14,23 @@
 #define PERF_CASE(_name) \
 	&__perf_case_##_name
 
-#define PERF_CASE_OPTION_HELP(_short, _long, _desc) \
-	printf("    %s, %-14s %s\n", _short, _long, _desc);
+struct perf_option {
+	struct option opt;
+	char *ostr;
+	char *desc;
+};
 
 struct perf_case {
 	char *name;
 	char *desc;
+	void* data;
 	int  (*init)(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[]);
 	int  (*exit)(struct perf_case *p_case, struct perf_stat *p_stat);
 	void (*func)(struct perf_case *p_case, struct perf_stat *p_stat);
 	void (*help)(struct perf_case *p_case);
-	void* data;
+	int  (*getopt)(struct perf_case *p_case, int opt);
+	struct perf_option *opts;
+	int opts_num;
 	struct perf_event *events;
 	int event_num;
 	int inner_stat;

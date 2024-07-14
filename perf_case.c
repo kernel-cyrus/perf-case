@@ -6,6 +6,15 @@
 #include "perf_case.h"
 #include "perf_stat.h"
 
+static int opt_cpu = 0;
+static int opt_all_events = 0;
+
+static struct perf_option default_options[] = {
+	{{"help",   optional_argument, NULL, 'h' }, "h",  "Help."},
+	{{"cpu",    optional_argument, NULL, 'c' }, "c:", "Choose a CPU to run."},
+	{{"events", optional_argument, NULL, 'e' }, "e:", "Run case with events, \"all\" for all events."},
+};
+
 static struct perf_event default_events[] = {
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES, "cpu-cycles"),
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_INSTRUCTIONS, "instructions"),
@@ -196,6 +205,19 @@ void run_case(struct perf_case *p_case, int argc, char **argv)
 	perf_case_destroy_run(p_run);
 }
 
+static void print_default_opts()
+{
+	int def_num = sizeof(default_options) / sizeof(struct perf_option);
+
+	for (int i = 0; i < def_num; i++) {
+		printf("    -%c, --%-14s %s\n",			\
+			(char)default_options[i].opt.val,	\
+			default_options[i].opt.name,		\
+			default_options[i].desc			\
+		);
+	}
+}
+
 static void print_help()
 {
 	struct perf_case *p_case;
@@ -209,12 +231,26 @@ static void print_help()
 	printf("    ./perf_case [case] [options]      // run a case\n");
 	printf("    ./perf_case -h                    // help\n");
 	printf("    ./perf_case -h [case]             // help for each case\n\n");
+	printf("Options:\n");
+	print_default_opts();
+	printf("\n");
 	printf("Cases Available:\n");
 	for (int i = 0; i < case_num; i++) {
 		p_case = perf_cases[i];
 		printf("    %-20s - %s\n", p_case->name, p_case->desc);
 	}
 	printf("\n");
+}
+
+static void print_case_opts(struct perf_case *p_case)
+{
+	for (int i = 0; i < p_case->opts_num; i++) {
+		printf("    -%c, --%-14s %s\n",			\
+			(char)p_case->opts[i].opt.val,		\
+			p_case->opts[i].opt.name,		\
+			p_case->opts[i].desc			\
+		);
+	}
 }
 
 static void print_case_help(struct perf_case *p_case)
@@ -225,12 +261,69 @@ static void print_case_help(struct perf_case *p_case)
 	printf("Usage:\n");
 	printf("    ./perf_case %s [options]\n", p_case->name);
 	printf("Options:\n");
-	if (p_case->help) {
-		p_case->help(p_case);
+	print_default_opts();
+
+	if (p_case->opts) {
+		print_case_opts(p_case);
 	} else {
 		printf("    [no options]\n");
 	}
+
+	if (p_case->help) {
+		p_case->help(p_case);
+	}
+
 	printf("\n");
+}
+
+static void init_opts(struct perf_case *p_case, int argc, char **argv)
+{
+	struct option *opts;
+	char ostr[64];
+	int opt, opt_idx;
+	int opt_num, def_num;
+	int i, j;
+
+	def_num = sizeof(default_options) / sizeof(struct perf_option);
+	opt_num = def_num + p_case->opts_num;
+
+	opts = malloc(sizeof(struct option) * (opt_num + 1));
+
+	for (i = 0; i < def_num; i++) {
+		memcpy(&opts[i], &default_options[i].opt, sizeof(struct option));
+		strcat(ostr, default_options[i].ostr);
+	}
+
+	for (j = 0; j < p_case->opts_num; j++, i++) {
+		memcpy(&opts[i], &p_case->opts[j].opt, sizeof(struct option));
+		strcat(ostr, p_case->opts[j].ostr);
+	}
+
+	memset(&opts[i], 0, sizeof(struct option));
+
+	while ((opt = getopt_long(argc, argv, ostr, opts, &opt_idx)) != -1) {
+		switch (opt) {
+		case 'h':
+			print_case_help(p_case);
+			exit(0);
+		case 'c':
+			opt_cpu = atoi(optarg);
+			printf("cpu: %d\n", opt_cpu);
+			break;
+		case 'e':
+			if (!strcmp(optarg, "all"))
+				opt_all_events = 1;
+			printf("events: %d\n", opt_all_events);
+			break;
+		default:
+			if (!p_case->getopt(p_case, opt))
+				break;
+			printf("ERROR: invalid parameter, please run \"./perf_case -h\" for help.\n");
+			exit(0);
+		}
+	}
+
+	free(opts);
 }
 
 int main(int argc, char **argv)
@@ -266,10 +359,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	if (argc > 2 && (!strcmp(argv[2], "-h") || !strcmp(argv[2], "--help"))) {
-		print_case_help(p_case);
-		return 0;
-	}
+	init_opts(p_case, argc, argv);
 
 	run_case(p_case, argc, argv);
 
