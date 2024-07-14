@@ -13,10 +13,14 @@
 #define ERROR			-1
 
 #define PERF_EVENT(_type, _id, _name) \
-	{.event_name = _name, .type = _type, .event_id = _id}
+	{.event_name = _name, .type = _type, .event_id = _id, .event_path = NULL}
+
+#define PERF_RAW_EVENT(_path, _name) \
+	{.event_name = _name, .type = PERF_TYPE_RAW, event_id = 0, .event_path = _path}
 
 struct perf_event {
-	const char *event_name;
+	char *event_name;
+	char *event_path;
 	uint32_t type;
 	uint64_t event_id;
 };

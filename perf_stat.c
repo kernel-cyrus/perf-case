@@ -74,6 +74,60 @@ void perf_simple_stat()
 	perf_event_close(fd);
 }
 
+int perf_stat_init_raw_event(struct perf_event *event)
+{
+	static char file_path[128];
+	FILE *file;
+	char *device_name, *file_name;
+	char file_buf[16];
+	int file_len, read_len, n_bytes;
+
+	device_name = strtok(event->event_path, "/");
+	if (!device_name)
+		return ERROR;
+
+	file_name = strtok(NULL, "/");
+	if (!file_name)
+		return ERROR;
+
+	sprintf(file_path, "/sys/bus/even_source/device/%s/events/%s", device_name, file_name);
+
+	file = fopen(file_path, "r");
+	if (file == NULL)
+		return ERROR;
+
+	fseek(file, 0, SEEK_END);
+	file_len = ftell(file);
+	fseek(file, 6, SEEK_SET);
+
+	read_len = file_len - 6;
+	if (read_len <= 0 || read_len >= sizeof(file_buf))
+		return ERROR;
+
+	n_bytes = fread(file_buf, 1, read_len, file);
+	if (!n_bytes)
+		return ERROR;
+
+	file_buf[read_len] = '\0';
+
+	event->event_id = strtol(file_buf, NULL, 16);
+
+	return SUCCESS;
+}
+
+int perf_stat_init_events(struct perf_event *events, int event_num)
+{
+	int err;
+	for (int i = 0; i < event_num; i++) {
+		if (events[i].event_path && !events[i].event_id) {
+			err = perf_stat_init_raw_event(&events[i]);
+			if (err)
+				return err;
+		}
+	}
+	return SUCCESS;
+}
+
 int perf_stat_init(struct perf_stat *stat, const char* name, struct perf_event *events, int event_num)
 {
 	if (!stat || !name || !events)
@@ -81,6 +135,8 @@ int perf_stat_init(struct perf_stat *stat, const char* name, struct perf_event *
 
 	if (event_num > MAX_PERF_EVENTS)
 		return ERROR;
+
+	perf_stat_init_events(events, event_num);
 
 	memset(stat, 0, sizeof(struct perf_stat));
 	stat->events = events;

@@ -16,8 +16,8 @@
 	printf("    %s, %-14s %s\n", _short, _long, _desc);
 
 struct perf_case {
-	const char *name;
-	const char *desc;
+	char *name;
+	char *desc;
 	int  (*init)(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[]);
 	int  (*exit)(struct perf_case *p_case, struct perf_stat *p_stat);
 	void (*func)(struct perf_case *p_case, struct perf_stat *p_stat);
