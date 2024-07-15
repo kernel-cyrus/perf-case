@@ -11,13 +11,14 @@
 #include "perf_stat.h"
 
 static int opt_cpu = 0;
-static int opt_all_events = 0;
 
 static struct perf_option default_options[] = {
 	{{"help",   optional_argument, NULL, 'h' }, "h",  "Help."},
 	{{"cpu",    optional_argument, NULL, 'c' }, "c:", "Choose a CPU to run."},
-	{{"events", optional_argument, NULL, 'e' }, "e:", "Run case with events, \"all\" for all events."},
+	{{"events", optional_argument, NULL, 'e' }, "e:", "Run case with events. (case|default|armv8)."},
 };
+
+static struct perf_eventset *g_eventset = NULL;
 
 static struct perf_event default_events[] = {
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES, "cpu-cycles"),
@@ -27,6 +28,18 @@ static struct perf_event default_events[] = {
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND, "stall-frontend"),
 	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_STALLED_CYCLES_BACKEND, "stall-backend"),
 	PERF_EVENT(PERF_TYPE_SOFTWARE, PERF_COUNT_SW_PAGE_FAULTS, "page-faults")
+};
+
+static struct perf_event armv8_events[] = {
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES, "cpu-cycles"),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_INSTRUCTIONS, "instructions"),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_REFERENCES, "cache-refs"),
+	PERF_EVENT(PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES, "cache-misses"),
+};
+
+static struct perf_eventset perf_event_sets[] = {
+	PERF_EVENT_SET("default", default_events),
+	PERF_EVENT_SET("armv8", armv8_events),
 };
 
 static struct perf_case *perf_cases[] = {
@@ -67,6 +80,17 @@ struct perf_case* perf_case_find(char* name)
 	return NULL;
 }
 
+struct perf_eventset* perf_eventset_find(char* name)
+{
+	int num = sizeof(perf_event_sets) / sizeof(struct perf_eventset);
+
+	for (int i = 0; i < num; i++)
+		if (!strcmp(name, perf_event_sets[i].name))
+			return &perf_event_sets[i];
+
+	return NULL;
+}
+
 struct perf_run* perf_case_create_run(struct perf_case *p_case)
 {
 	struct perf_run *p_run;
@@ -79,7 +103,10 @@ struct perf_run* perf_case_create_run(struct perf_case *p_case)
 	p_run = malloc(sizeof(struct perf_run));
 	memset(p_run, 0, sizeof(struct perf_run));
 
-	if (p_case->events && !opt_all_events) {
+	if (g_eventset) {
+		events = g_eventset->events;
+		event_num = g_eventset->event_num;
+	} else if (p_case->events) {
 		events = p_case->events;
 		event_num = p_case->event_num;
 	} else {
@@ -332,12 +359,14 @@ static void init_opts(struct perf_case *p_case, int argc, char **argv)
 			printf("Run on CPU: %d\n", opt_cpu);
 			break;
 		case 'e':
-			if (strcmp(optarg, "all")) {
-				printf("ERROR: Invalid parameter \"%s\"\n", optarg);
+			if (!strcmp(optarg, "case"))
+				break;
+			g_eventset = perf_eventset_find(optarg);
+			if (!g_eventset) {
+				printf("ERROR: No event set named \"%s\"\n", optarg);
 				exit(0);
 			}
-			opt_all_events = 1;
-			printf("All events enabled\n");
+			printf("Enable events: %s\n", g_eventset->name);
 			break;
 		default:
 			if (!p_case->getopt(p_case, opt))

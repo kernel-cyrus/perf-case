@@ -14,6 +14,15 @@
 #define PERF_CASE(_name) \
 	&__perf_case_##_name
 
+#define PERF_EVENT_SET(_name, _events) \
+	{.name = _name, .events = _events, .event_num = sizeof(_events) / sizeof(struct perf_event)}
+
+struct perf_eventset {
+	char *name;
+	struct perf_event *events;
+	int event_num;
+};
+
 struct perf_option {
 	struct option opt;
 	char *ostr;
