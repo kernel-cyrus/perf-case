@@ -94,6 +94,9 @@ int perf_stat_init_raw_event(struct perf_event *event)
 	if (!file_name)
 		return ERROR;
 
+	if (!event->event_name)
+		event->event_name = event->event_path + (file_name - event_path);
+
 	sprintf(file_path, "/sys/bus/event_source/devices/%s/events/%s", device_name, file_name);
 
 	file = fopen(file_path, "r");
@@ -111,17 +114,18 @@ int perf_stat_init_raw_event(struct perf_event *event)
 	return SUCCESS;
 }
 
-int perf_stat_init_events(struct perf_event *events, int event_num)
+void perf_stat_init_events(struct perf_event *events, int event_num)
 {
 	int err;
 	for (int i = 0; i < event_num; i++) {
 		if (events[i].event_path && !events[i].event_id) {
 			err = perf_stat_init_raw_event(&events[i]);
-			if (err)
-				return err;
+			if (err) {
+				printf("WARNING: Can not open event: %s\n", events[i].event_path);
+				continue;
+			}
 		}
 	}
-	return SUCCESS;
 }
 
 int perf_stat_init(struct perf_stat *stat, const char* name, struct perf_event *events, int event_num)
