@@ -1,0 +1,140 @@
+sudo ./perf_case membw_wr_4_4x -e orin -c 0
+Enable events: orin
+Run on CPU: 0
+membw_wr_4_4x
+-----------------------
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16662.315 MB/s (0.007682 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16679.270 MB/s (0.007674 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16655.723 MB/s (0.007685 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16660.302 MB/s (0.007683 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16615.457 MB/s (0.007704 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16623.124 MB/s (0.007700 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16624.849 MB/s (0.007699 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16615.321 MB/s (0.007704 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16626.164 MB/s (0.007699 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16615.526 MB/s (0.007704 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16620.566 MB/s (0.007701 ms)
+bufsize: 128.000000 MB
+width: 4 bytes (32bit) * 4
+stride: 16 bytes
+iterations: 1
+16658.223 MB/s (0.007684 ms)
+-----------------------
+    cpu-cycles              :         16833103
+    instructions            :         58778559
+    cache-refs              :         33573989
+    cache-misses            :              123
+    cpu_cycles              :         16831530
+    bus_access              :          8386586
+    bus_cycles              :         16832954
+    cnt_cycles              :           238950
+    inst_spec               :         58785402
+    inst_retired            :         58780680
+    op_spec                 :         50398534
+    op_retired              :         50393366
+    br_pred                 :          8400760
+    br_retired              :          8400383
+    br_mis_pred             :              125
+    br_mis_pred_retired     :              110
+    stall                   :          8427444
+    stall_backend           :          8405827
+    stall_backend_mem       :             5379
+    stall_frontend          :            19799
+    stall_slot              :         50587486
+    stall_slot_backend      :         25279250
+    stall_slot_frontend     :         25308400
+    mem_access              :         33573849
+    itlb_walk               :                0
+    dtlb_walk               :              361
+    l1i_tlb                 :            14116
+    l1i_tlb_refill          :                0
+    l1d_tlb                 :         33573869
+    l1d_tlb_refill          :              630
+    l2d_tlb                 :              644
+    l2d_tlb_refill          :              168
+    l1i_cache               :          8404023
+    l1i_cache_lmiss         :              663
+    l1i_cache_refill        :              660
+    l1d_cache               :         33574134
+    l1d_cache_lmiss_rd      :              129
+    l1d_cache_refill        :              176
+    l1d_cache_wb            :              135
+    l2d_cache               :          2098434
+    l2d_cache_allocate      :            12236
+    l2d_cache_lmiss_rd      :              724
+    l2d_cache_refill        :              700
+    l2d_cache_wb            :            11711
+    l3d_cache               :            98738
+    l3d_cache_allocate      :            97728
+    l3d_cache_lmiss_rd      :              486
+    l3d_cache_refill        :              486
+    ll_cache_rd             :             1027
+    ll_cache_miss_rd        :              495
+    dsu_cycles              :         16827246
+    dsu_bus_cycles          :         16827476
+    dsu_bus_access          :          8390796
+    l3d_cache               :            98886
+    l3d_cache_allocate      :            97773
+    l3d_cache_refill        :              562
+    l3d_cache_wb            :                0
+    scf_bus_cycles          :         16831425
+    scf_bus_access          :          8391056
+    scf_bus_access_rd       :             4384
+    scf_bus_access_wr       :          8386524
+    scf_bus_access_normal   :                0
+    scf_bus_access_periph   :                0
+    scf_bus_access_shared   :                0
+    scf_bus_access_unshared :                0
+    scf_cache               :                0
+    scf_cache_allocate      :                0
+    scf_cache_refill        :                0
+    scf_cache_wb            :                0
+-----------------------
+finished with 12 runs:
+    min time: 7.674197 ms
+    max time: 7.703733 ms
+    avg time: 7.693213 ms
