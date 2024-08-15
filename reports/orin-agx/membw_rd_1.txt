@@ -1,0 +1,236 @@
+Run on CPU: 1
+Enable events: armv8
+membw_rd_1
+-----------------------
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1952.309 MB/s (0.065563 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+2012.869 MB/s (0.063591 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1915.513 MB/s (0.066823 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1997.650 MB/s (0.064075 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1925.392 MB/s (0.066480 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1940.803 MB/s (0.065952 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1986.123 MB/s (0.064447 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+2020.318 MB/s (0.063356 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+2010.113 MB/s (0.063678 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1939.831 MB/s (0.065985 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+2014.197 MB/s (0.063549 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1996.038 MB/s (0.064127 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1961.910 MB/s (0.065243 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1963.292 MB/s (0.065197 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1954.890 MB/s (0.065477 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1955.922 MB/s (0.065442 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+2001.952 MB/s (0.063938 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+1986.023 MB/s (0.064450 ms)
+-----------------------
+    cpu-cycles              :        143818941
+    instructions            :        537303368
+    cache-refs              :        134361145
+    cache-misses            :             5012
+    page-faults             :                0
+    context-switch          :                2
+    mem_access              :        134332761
+    mem_access_rd           :        134291010
+    mem_access_wr           :            41717
+    br_pred                 :        134295541
+    br_miss_pred            :              521
+    br_retired              :        134286311
+    br_miss_pred_retired    :              691
+    stall                   :         39865126
+    stall_frontend          :           103371
+    stall_backend           :         39762695
+    stall_slot              :        476394572
+    stall_slot_backend      :        182641984
+    stall_slot_frontend     :        347152104
+    l1i_tlb                 :           348010
+    l1i_tlb_refill          :                0
+    l2i_tlb                 :                0
+    l2i_tlb_refill          :                0
+    l1d_tlb                 :        134329894
+    l1d_tlb_rd              :        134288070
+    l1d_tlb_wr              :            39916
+    l1d_tlb_refill          :              657
+    l1d_tlb_refill_rd       :              652
+    l1d_tlb_refill_wr       :                5
+    l2d_tlb                 :              732
+    l2d_tlb_rd              :              667
+    l2d_tlb_wr              :               10
+    l2d_tlb_refill          :              176
+    l2d_tlb_refill_rd       :              175
+    l2d_tlb_refill_wr       :                1
+    itlb_walk               :                1
+    dtlb_walk               :              165
+    l1i_cache               :        134297814
+    l1i_cache_refill        :             3755
+    l1i_cache_lmiss         :             3751
+    l2i_cache               :                0
+    l2i_cache_refill        :                0
+    l2i_cache_lmiss         :                0
+    l1d_cache               :        134329796
+    l1d_cache_rd            :        134289183
+    l1d_cache_wr            :            40552
+    l1d_cache_refill        :             4369
+    l1d_cache_refill_rd     :             3650
+    l1d_cache_refill_wr     :              736
+    l1d_cache_refill_inner  :             3988
+    l1d_cache_refill_outer  :              337
+    l1d_cache_allocate      :                0
+    l1d_cache_inval         :              104
+    l1d_cache_wb            :             2396
+    l1d_cache_wb_clean      :               67
+    l1d_cache_wb_victim     :             2424
+    l1d_cache_lmiss_rd      :             3787
+    l2d_cache               :          4206613
+    l2d_cache_rd            :          2105255
+    l2d_cache_wr            :          2101377
+    l2d_cache_refill        :             5521
+    l2d_cache_refill_rd     :             5526
+    l2d_cache_refill_wr     :                0
+    l2d_cache_allocate      :                0
+    l2d_cache_inval         :              111
+    l2d_cache_wb            :           134628
+    l2d_cache_wb_clean      :              131
+    l2d_cache_wb_victim     :           136492
+    l2d_cache_lmiss_rd      :             5832
+    l3d_cache               :          2239991
+    l3d_cache_rd            :          2103524
+    l3d_cache_wr            :                0
+    l3d_cache_refill        :          2098344
+    l3d_cache_refill_rd     :                0
+    l3d_cache_refill_wr     :                0
+    l3d_cache_allocate      :           138104
+    l3d_cache_inval         :                0
+    l3d_cache_wb            :                0
+    l3d_cache_wb_clean      :                0
+    l3d_cache_wb_victim     :                0
+    l3d_cache_lmiss_rd      :          2098534
+    llc_cache               :                0
+    llc_cache_rd            :          2102845
+    llc_cache_miss          :                0
+    llc_cache_miss_rd       :          2097940
+    bus_cycles              :        142929054
+    bus_access              :          8942336
+    bus_access_rd           :          8404160
+    bus_access_wr           :           537896
+    bus_access_normal       :                0
+    bus_access_periph       :                0
+    bus_access_shared       :                0
+    bus_access_not_shared   :                0
+    inst_spec               :        537283475
+    inst_retired            :        537208908
+    op_spec                 :        403284860
+    op_retired              :        403148517
+    ld_spec                 :        134298206
+    st_spec                 :            40477
+    ldrex_spec              :                0
+    strex_spec              :                0
+    dp_spec                 :        268640503
+    vfp_spec                :                0
+    ase_spec                :                0
+-----------------------
+finished with 18 runs:
+    min time: 63.356354 ms
+    max time: 66.822827 ms
+    avg time: 64.854073 ms
+Run on CPU: 1
+Enable events: orin
+membw_rd_1
+-----------------------
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+2020.038 MB/s (0.063365 ms)
+bufsize: 128.000000 MB
+width: 1 bytes (8bit)
+stride: 1 bytes
+iterations: 1
+2028.615 MB/s (0.063097 ms)
+-----------------------
+    scf_bus_cycles          :        139012673
+    scf_bus_access          :          8956141
+    scf_bus_access_rd       :          8413441
+    scf_bus_access_wr       :           542068
+    scf_bus_access_normal   :                0
+    scf_bus_access_periph   :                0
+    scf_bus_access_shared   :                0
+    scf_bus_access_unshared :                0
+    scf_cache               :                0
+    scf_cache_allocate      :                0
+    scf_cache_refill        :                0
+    scf_cache_wb            :                0
+-----------------------
+finished with 2 runs:
+    min time: 63.097225 ms
+    max time: 63.365132 ms
+    avg time: 63.231178 ms

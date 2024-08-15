@@ -1,0 +1,136 @@
+Run on CPU: 1
+Enable events: armv8
+memset_malloc
+-----------------------
+-----------------------
+    cpu-cycles              :         37799137
+    instructions            :         31639616
+    cache-refs              :         10637288
+    cache-misses            :           392100
+    page-faults             :              575
+    context-switch          :                0
+    mem_access              :         10601496
+    mem_access_rd           :          2604807
+    mem_access_wr           :          7996637
+    br_pred                 :          7041116
+    br_miss_pred            :             3131
+    br_retired              :          6997189
+    br_miss_pred_retired    :             2640
+    stall                   :         30747259
+    stall_frontend          :          2485259
+    stall_backend           :         28264027
+    stall_slot              :        193410587
+    stall_slot_backend      :        161189036
+    stall_slot_frontend     :         31902893
+    l1i_tlb                 :          1190929
+    l1i_tlb_refill          :               12
+    l2i_tlb                 :                0
+    l2i_tlb_refill          :                0
+    l1d_tlb                 :         10597101
+    l1d_tlb_rd              :          2604881
+    l1d_tlb_wr              :          7996506
+    l1d_tlb_refill          :              956
+    l1d_tlb_refill_rd       :              192
+    l1d_tlb_refill_wr       :              764
+    l2d_tlb                 :             2874
+    l2d_tlb_rd              :              333
+    l2d_tlb_wr              :             2514
+    l2d_tlb_refill          :              615
+    l2d_tlb_refill_rd       :               39
+    l2d_tlb_refill_wr       :              576
+    itlb_walk               :               13
+    dtlb_walk               :              602
+    l1i_cache               :          7270041
+    l1i_cache_refill        :             6008
+    l1i_cache_lmiss         :             6004
+    l2i_cache               :                0
+    l2i_cache_refill        :                0
+    l2i_cache_lmiss         :                0
+    l1d_cache               :         10617977
+    l1d_cache_rd            :          2615843
+    l1d_cache_wr            :          8002108
+    l1d_cache_refill        :           390224
+    l1d_cache_refill_rd     :            29773
+    l1d_cache_refill_wr     :           360063
+    l1d_cache_refill_inner  :           163310
+    l1d_cache_refill_outer  :           226541
+    l1d_cache_allocate      :                0
+    l1d_cache_inval         :             4094
+    l1d_cache_wb            :           395890
+    l1d_cache_wb_clean      :             3744
+    l1d_cache_wb_victim     :           388403
+    l1d_cache_lmiss_rd      :            30122
+    l2d_cache               :          4632082
+    l2d_cache_rd            :           404446
+    l2d_cache_wr            :          4227657
+    l2d_cache_refill        :           235984
+    l2d_cache_refill_rd     :           235995
+    l2d_cache_refill_wr     :                0
+    l2d_cache_allocate      :          1369862
+    l2d_cache_inval         :              158
+    l2d_cache_wb            :          2217421
+    l2d_cache_wb_clean      :              201
+    l2d_cache_wb_victim     :          2221659
+    l2d_cache_lmiss_rd      :           238009
+    l3d_cache               :          4892651
+    l3d_cache_rd            :           875182
+    l3d_cache_wr            :                0
+    l3d_cache_refill        :           856687
+    l3d_cache_refill_rd     :                0
+    l3d_cache_refill_wr     :                0
+    l3d_cache_allocate      :          4017404
+    l3d_cache_inval         :                0
+    l3d_cache_wb            :                0
+    l3d_cache_wb_clean      :                0
+    l3d_cache_wb_victim     :                0
+    l3d_cache_lmiss_rd      :           856444
+    llc_cache               :                0
+    llc_cache_rd            :           872021
+    llc_cache_miss          :                0
+    llc_cache_miss_rd       :           856901
+    bus_cycles              :         37508920
+    bus_access              :         19550702
+    bus_access_rd           :          3472580
+    bus_access_wr           :         16078062
+    bus_access_normal       :                0
+    bus_access_periph       :                0
+    bus_access_shared       :                0
+    bus_access_not_shared   :                0
+    inst_spec               :         31921763
+    inst_retired            :         31577446
+    op_spec                 :         32186109
+    op_retired              :         31792846
+    ld_spec                 :          2665347
+    st_spec                 :          8025253
+    ldrex_spec              :                0
+    strex_spec              :                0
+    dp_spec                 :         16085623
+    vfp_spec                :                0
+    ase_spec                :                0
+-----------------------
+finished with 18 runs:
+    min time: 17.082439 ms
+    max time: 17.255593 ms
+    avg time: 17.178170 ms
+Run on CPU: 1
+Enable events: orin
+memset_malloc
+-----------------------
+-----------------------
+    scf_bus_cycles          :         37914485
+    scf_bus_access          :         19580490
+    scf_bus_access_rd       :          3503833
+    scf_bus_access_wr       :         16076511
+    scf_bus_access_normal   :                0
+    scf_bus_access_periph   :                0
+    scf_bus_access_shared   :                0
+    scf_bus_access_unshared :                0
+    scf_cache               :                0
+    scf_cache_allocate      :                0
+    scf_cache_refill        :                0
+    scf_cache_wb            :                0
+-----------------------
+finished with 2 runs:
+    min time: 17.234627 ms
+    max time: 17.316548 ms
+    avg time: 17.275587 ms
