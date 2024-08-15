@@ -387,7 +387,6 @@ static void print_case_help(struct perf_case *p_case)
 	printf("Usage:\n");
 	printf("    ./perf_case %s [options]\n", p_case->name);
 	printf("Options:\n");
-	print_default_opts();
 
 	if (p_case->opts) {
 		print_case_opts(p_case);

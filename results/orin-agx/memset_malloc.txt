@@ -1,0 +1,80 @@
+$ sudo ./perf_case memset_malloc -c 0 -e orin
+Enable events: orin
+Run on CPU: 0
+memset_malloc
+-----------------------
+-----------------------
+    cpu-cycles              :         37890310
+    instructions            :         31492879
+    cache-refs              :         10600343
+    cache-misses            :           392340
+    cpu_cycles              :         37898843
+    bus_access              :         19560885
+    bus_cycles              :         37638457
+    cnt_cycles              :           536263
+    inst_spec               :         31896193
+    inst_retired            :         31508390
+    op_spec                 :         32161916
+    op_retired              :         31748793
+    br_pred                 :          7039584
+    br_retired              :          6994354
+    br_mis_pred             :             3678
+    br_mis_pred_retired     :             2667
+    stall                   :         30918258
+    stall_backend           :         28425708
+    stall_backend_mem       :         19655269
+    stall_frontend          :          2380011
+    stall_slot              :        193154980
+    stall_slot_backend      :        161674434
+    stall_slot_frontend     :         31486250
+    mem_access              :         10582774
+    itlb_walk               :                3
+    dtlb_walk               :              607
+    l1i_tlb                 :          1216772
+    l1i_tlb_refill          :                3
+    l1d_tlb                 :         10614399
+    l1d_tlb_refill          :              926
+    l2d_tlb                 :             2755
+    l2d_tlb_refill          :              606
+    l1i_cache               :          7218696
+    l1i_cache_lmiss         :             4429
+    l1i_cache_refill        :             4426
+    l1d_cache               :         10597354
+    l1d_cache_lmiss_rd      :            28030
+    l1d_cache_refill        :           388756
+    l1d_cache_wb            :           394671
+    l2d_cache               :          4631258
+    l2d_cache_allocate      :          1370085
+    l2d_cache_lmiss_rd      :           235707
+    l2d_cache_refill        :           237876
+    l2d_cache_wb            :          2214453
+    l3d_cache               :          4889034
+    l3d_cache_allocate      :          4018479
+    l3d_cache_lmiss_rd      :           856924
+    l3d_cache_refill        :           856949
+    ll_cache_rd             :           871588
+    ll_cache_miss_rd        :           856949
+    dsu_cycles              :         37506794
+    dsu_bus_cycles          :         37508444
+    dsu_bus_access          :         19551818
+    l3d_cache               :          4889689
+    l3d_cache_allocate      :          4017365
+    l3d_cache_refill        :           855524
+    l3d_cache_wb            :                0
+    scf_bus_cycles          :         37514717
+    scf_bus_access          :         19541184
+    scf_bus_access_rd       :          3463796
+    scf_bus_access_wr       :         16076098
+    scf_bus_access_normal   :                0
+    scf_bus_access_periph   :                0
+    scf_bus_access_shared   :                0
+    scf_bus_access_unshared :                0
+    scf_cache               :                0
+    scf_cache_allocate      :                0
+    scf_cache_refill        :                0
+    scf_cache_wb            :                0
+-----------------------
+finished with 12 runs:
+    min time: 17.144093 ms
+    max time: 17.307807 ms
+    avg time: 17.219862 ms
