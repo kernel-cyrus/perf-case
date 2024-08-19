@@ -66,7 +66,7 @@ static int cpufp_exit(struct perf_case *p_case, struct perf_stat *p_stat)
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
-/* NOTE: Each loop contains tw extra CMP,BNE instructions. */
+/* NOTE: INT & FP Instructions can run parallel, each loop contains ADD,CMP,FMOV,FADD,B */
 static void cpufp_add_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	struct cpufp_data *p_data = (struct cpufp_data*)p_case->data;
@@ -123,7 +123,7 @@ PERF_CASE_DEFINE(cpufp_add) = {
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
-/* NOTE: Each loop contains three extra ADD,CMP,BNE instructions. */
+/* NOTE: INT & FP Instructions can run parallel, each loop contains ADD,CMP,FMOV,FMUL,B */
 static void cpufp_mul_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	struct cpufp_data *p_data = (struct cpufp_data*)p_case->data;
