@@ -75,7 +75,7 @@ static void cpufp_add_func(struct perf_case *p_case, struct perf_stat *p_stat)
 	register double a = 0, b = 0, c = 0, d = 0, e = 0, f = 0;
 	if (num < 1 || num > 6) {
 		printf("ERROR: Only support n from 1 to 6.\n");
-		return;
+		exit(0);
 	}
 	perf_stat_begin(p_stat);
 	if (num == 1) {
@@ -110,7 +110,7 @@ static void cpufp_add_func(struct perf_case *p_case, struct perf_stat *p_stat)
 
 PERF_CASE_DEFINE(cpufp_add) = {
 	.name = "cpufp_add",
-	.desc = "simple add loop.",
+	.desc = "simple fp add loop.",
 	.init = cpufp_init,
 	.exit = cpufp_exit,
 	.func = cpufp_add_func,
@@ -132,7 +132,7 @@ static void cpufp_mul_func(struct perf_case *p_case, struct perf_stat *p_stat)
 	register double a = 1, b = 1, c = 1, d = 1, e = 1, f = 1;
 	if (num < 1 || num > 6) {
 		printf("ERROR: Only support n from 1 to 6.\n");
-		return;
+		exit(0);
 	}
 	perf_stat_begin(p_stat);
 	if (num == 1) {
@@ -167,7 +167,7 @@ static void cpufp_mul_func(struct perf_case *p_case, struct perf_stat *p_stat)
 
 PERF_CASE_DEFINE(cpufp_mul) = {
 	.name = "cpufp_mul",
-	.desc = "simple mul loop.",
+	.desc = "simple fp mul loop.",
 	.init = cpufp_init,
 	.exit = cpufp_exit,
 	.func = cpufp_mul_func,

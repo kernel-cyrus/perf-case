@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <arm_neon.h>
 
 #include "../perf_stat.h"
 #include "../perf_case.h"
@@ -34,12 +35,6 @@ static int cpusimd_getopt(struct perf_case* p_case, int opt)
 	return SUCCESS;
 }
 
-static void use_it(unsigned char* a)
-{
-	static unsigned char* use;
-	use = a;
-}
-
 static int cpusimd_init(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[])
 {
 	struct cpusimd_data *p_data;
@@ -65,36 +60,85 @@ static int cpusimd_exit(struct perf_case *p_case, struct perf_stat *p_stat)
 	return SUCCESS;
 }
 
-unsigned char a[16];
-unsigned char b[16];
-unsigned char c[16];
+static float32x4_t a = {1.0, 1.0, 1.0, 1.0};
+static float32x4_t b = {2.0, 2.0, 2.0, 2.0};
+static float32x4_t c = {3.0, 3.0, 3.0, 3.0};
+static float32x4_t d = {4.0, 4.0, 4.0, 4.0};
+static float32x4_t e = {5.0, 5.0, 5.0, 5.0};
+static float32x4_t f = {6.0, 6.0, 6.0, 6.0};
+static float32x4_t x = {1.1, 1.1, 1.1, 1.1};
 
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
-/* NOTE: Each loop contains tw extra CMP,BNE instructions. */
+/* NOTE: Each loop contains n FADD.VF32 and ADD,CMP,BNE. */
 static void cpusimd_add_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	struct cpusimd_data *p_data = (struct cpusimd_data*)p_case->data;
 	int num = p_data->num;
-	register int loops = p_data->iterations;
-
-	memset(a, 1, sizeof(a));
-	memset(b, 1, sizeof(b));
-	memset(c, 0, sizeof(c));
-
+	register int i = 0, loops = p_data->iterations;
+    	float output[4];
+	if (num < 1 || num > 6) {
+		printf("ERROR: Only support n from 1 to 6.\n");
+		exit(0);
+	}
 	perf_stat_begin(p_stat);
-	for (int i = 0; i < loops; i++)
-		for (int j = 0; j < 16; j++)
-			c[j] = a[j] + b[j];
+	if (num == 1) {
+		while(i < loops) {
+			i++;
+			a = vaddq_f32(a, x);
+		}
+	} else if (num == 2) {
+		while(i < loops) {
+			i++;
+			a = vaddq_f32(a, x);
+			b = vaddq_f32(b, x);
+		}
+	} else if (num == 3) {
+		while(i < loops) {
+			i++;
+			a = vaddq_f32(a, x);
+			b = vaddq_f32(b, x);
+			c = vaddq_f32(c, x);
+		}
+	} else if (num == 4) {
+		while(i < loops) {
+			i++;
+			a = vaddq_f32(a, x);
+			b = vaddq_f32(b, x);
+			c = vaddq_f32(c, x);
+			d = vaddq_f32(d, x);
+		}
+	} else if (num == 5) {
+		while(i < loops) {
+			i++;
+			a = vaddq_f32(a, x);
+			b = vaddq_f32(b, x);
+			c = vaddq_f32(c, x);
+			d = vaddq_f32(d, x);
+			e = vaddq_f32(e, x);
+		}
+	} else if (num == 6) {
+		while(i < loops) {
+			i++;
+			a = vaddq_f32(a, x);
+			b = vaddq_f32(b, x);
+			c = vaddq_f32(c, x);
+			d = vaddq_f32(d, x);
+			e = vaddq_f32(e, x);
+			f = vaddq_f32(f, x);
+		}
+	}
 	perf_stat_end(p_stat);
-
-	use_it(c);
+	/* Consume the data to avoid compiler optimizing. */
+	vst1q_f32(output, a);
+	vst1q_f32(output, b);
+	vst1q_f32(output, c);
+	vst1q_f32(output, d);
+	vst1q_f32(output, e);
+	vst1q_f32(output, f);
 }
-#pragma GCC pop_options
 
 PERF_CASE_DEFINE(cpusimd_add) = {
 	.name = "cpusimd_add",
-	.desc = "simple add loop.",
+	.desc = "simple simd add loop.",
 	.init = cpusimd_init,
 	.exit = cpusimd_exit,
 	.func = cpusimd_add_func,
@@ -105,18 +149,77 @@ PERF_CASE_DEFINE(cpusimd_add) = {
 };
 
 
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
-/* NOTE: Each loop contains three extra ADD,CMP,BNE instructions. */
+/* NOTE: Each loop contains n FMUL.VF32 and ADD,CMP,BNE. */
 static void cpusimd_mul_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
-
+	struct cpusimd_data *p_data = (struct cpusimd_data*)p_case->data;
+	int num = p_data->num;
+	register int i = 0, loops = p_data->iterations;
+    	float output[4];
+	if (num < 1 || num > 6) {
+		printf("ERROR: Only support n from 1 to 6.\n");
+		exit(0);
+	}
+	perf_stat_begin(p_stat);
+	if (num == 1) {
+		while(i < loops) {
+			i++;
+			a = vmulq_f32(a, x);
+		}
+	} else if (num == 2) {
+		while(i < loops) {
+			i++;
+			a = vmulq_f32(a, x);
+			b = vmulq_f32(b, x);
+		}
+	} else if (num == 3) {
+		while(i < loops) {
+			i++;
+			a = vmulq_f32(a, x);
+			b = vmulq_f32(b, x);
+			c = vmulq_f32(c, x);
+		}
+	} else if (num == 4) {
+		while(i < loops) {
+			i++;
+			a = vmulq_f32(a, x);
+			b = vmulq_f32(b, x);
+			c = vmulq_f32(c, x);
+			d = vmulq_f32(d, x);
+		}
+	} else if (num == 5) {
+		while(i < loops) {
+			i++;
+			a = vmulq_f32(a, x);
+			b = vmulq_f32(b, x);
+			c = vmulq_f32(c, x);
+			d = vmulq_f32(d, x);
+			e = vmulq_f32(e, x);
+		}
+	} else if (num == 6) {
+		while(i < loops) {
+			i++;
+			a = vmulq_f32(a, x);
+			b = vmulq_f32(b, x);
+			c = vmulq_f32(c, x);
+			d = vmulq_f32(d, x);
+			e = vmulq_f32(e, x);
+			f = vmulq_f32(f, x);
+		}
+	}
+	perf_stat_end(p_stat);
+	/* Consume the data to avoid compiler optimizing. */
+	vst1q_f32(output, a);
+	vst1q_f32(output, b);
+	vst1q_f32(output, c);
+	vst1q_f32(output, d);
+	vst1q_f32(output, e);
+	vst1q_f32(output, f);
 }
-#pragma GCC pop_options
 
 PERF_CASE_DEFINE(cpusimd_mul) = {
 	.name = "cpusimd_mul",
-	.desc = "simple mul loop.",
+	.desc = "simple simd mul loop.",
 	.init = cpusimd_init,
 	.exit = cpusimd_exit,
 	.func = cpusimd_mul_func,
