@@ -490,15 +490,22 @@ static void print_case_help(struct perf_case *p_case)
 	printf("\n");
 }
 
-static int set_cpu(int cpu)
+static void init_cpu(int cpu)
 {
+	int err;
 	pid_t pid = getpid();
 	cpu_set_t mask;
 
 	CPU_ZERO(&mask);
 	CPU_SET(cpu, &mask);
 
-	return sched_setaffinity(pid, sizeof(mask), &mask);
+	err = sched_setaffinity(pid, sizeof(mask), &mask);
+	if (err) {
+		printf("ERROR: Set cpu affinity failed.\n");
+		exit(0);
+	}
+	
+	printf("Run on CPU: %d\n", cpu);
 }
 
 static void init_opts(struct perf_case *p_case, int argc, char **argv)
@@ -508,18 +515,19 @@ static void init_opts(struct perf_case *p_case, int argc, char **argv)
 	int opt, opt_idx;
 	int opt_num, def_num;
 	int i, j;
-	int err;
 
 	def_num = sizeof(default_options) / sizeof(struct perf_option);
 	opt_num = def_num + p_case->opts_num;
 
 	opts = malloc(sizeof(struct option) * (opt_num + 1));
 
+	/* Add default options */
 	for (i = 0; i < def_num; i++) {
 		memcpy(&opts[i], &default_options[i].opt, sizeof(struct option));
 		strcat(ostr, default_options[i].ostr);
 	}
 
+	/* Add case options */
 	for (j = 0; j < p_case->opts_num; j++, i++) {
 		memcpy(&opts[i], &p_case->opts[j].opt, sizeof(struct option));
 		strcat(ostr, p_case->opts[j].ostr);
@@ -534,12 +542,6 @@ static void init_opts(struct perf_case *p_case, int argc, char **argv)
 			exit(0);
 		case 'c':
 			opt_cpu = atoi(optarg);
-			err = set_cpu(opt_cpu);
-			if (err) {
-				printf("ERROR: Set cpu affinity failed.\n");
-				exit(0);
-			}
-			printf("Run on CPU: %d\n", opt_cpu);
 			break;
 		case 'e':
 			if (!strcmp(optarg, "case"))
@@ -558,6 +560,8 @@ static void init_opts(struct perf_case *p_case, int argc, char **argv)
 			exit(0);
 		}
 	}
+
+	init_cpu(opt_cpu);
 
 	free(opts);
 }
