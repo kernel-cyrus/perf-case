@@ -5,7 +5,7 @@
 #include "../perf_stat.h"
 #include "../perf_case.h"
 
-struct cpuint_data {
+struct cpufp_data {
 	int num;
 	int iterations;
 };
@@ -13,12 +13,12 @@ struct cpuint_data {
 static int opt_num = 1;
 static int opt_iterations = 1000000;
 
-static struct perf_option cpuint_opts[] = {
+static struct perf_option cpufp_opts[] = {
 	{{"num", optional_argument, NULL, 'n' }, "n:", "Operations per loop. (n: 1-6)"},
 	{{"iterations", optional_argument, NULL, 'i' }, "i:", "Iteration loops. (default: 1000K)"},
 };
 
-static int cpuint_getopt(struct perf_case* p_case, int opt)
+static int cpufp_getopt(struct perf_case* p_case, int opt)
 {
 	switch (opt) {
 	case 'n':
@@ -39,15 +39,15 @@ static void use_it(int a)
 	use += a;
 }
 
-static int cpuint_init(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[])
+static int cpufp_init(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[])
 {
-	struct cpuint_data *p_data;
+	struct cpufp_data *p_data;
 	
-	p_case->data = malloc(sizeof(struct cpuint_data));
+	p_case->data = malloc(sizeof(struct cpufp_data));
 	if (!p_case->data)
 		return ERROR;
 
-	p_data = (struct cpuint_data*)p_case->data;
+	p_data = (struct cpufp_data*)p_case->data;
 
 	p_data->num = opt_num;
 	p_data->iterations = opt_iterations;
@@ -58,7 +58,7 @@ static int cpuint_init(struct perf_case *p_case, struct perf_stat *p_stat, int a
 	return SUCCESS;
 }
 
-static int cpuint_exit(struct perf_case *p_case, struct perf_stat *p_stat)
+static int cpufp_exit(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	free(p_case->data);
 	return SUCCESS;
@@ -67,12 +67,12 @@ static int cpuint_exit(struct perf_case *p_case, struct perf_stat *p_stat)
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 /* NOTE: Each loop contains tw extra CMP,BNE instructions. */
-static void cpuint_add_func(struct perf_case *p_case, struct perf_stat *p_stat)
+static void cpufp_add_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
-	struct cpuint_data *p_data = (struct cpuint_data*)p_case->data;
+	struct cpufp_data *p_data = (struct cpufp_data*)p_case->data;
 	int num = p_data->num;
 	register int loops = p_data->iterations;
-	register int a = 0, b = 0, c = 0, d = 0, e = 0, f = 0;
+	register double a = 0, b = 0, c = 0, d = 0, e = 0, f = 0;
 	if (num < 1 || num > 6) {
 		printf("ERROR: Only support n from 1 to 6.\n");
 		return;
@@ -108,15 +108,15 @@ static void cpuint_add_func(struct perf_case *p_case, struct perf_stat *p_stat)
 }
 #pragma GCC pop_options
 
-PERF_CASE_DEFINE(cpuint_add) = {
-	.name = "cpuint_add",
+PERF_CASE_DEFINE(cpufp_add) = {
+	.name = "cpufp_add",
 	.desc = "simple add loop.",
-	.init = cpuint_init,
-	.exit = cpuint_exit,
-	.func = cpuint_add_func,
-	.getopt = cpuint_getopt,
-	.opts = cpuint_opts,
-	.opts_num = sizeof(cpuint_opts) / sizeof(struct perf_option),
+	.init = cpufp_init,
+	.exit = cpufp_exit,
+	.func = cpufp_add_func,
+	.getopt = cpufp_getopt,
+	.opts = cpufp_opts,
+	.opts_num = sizeof(cpufp_opts) / sizeof(struct perf_option),
 	.inner_stat = true
 };
 
@@ -124,12 +124,12 @@ PERF_CASE_DEFINE(cpuint_add) = {
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 /* NOTE: Each loop contains three extra ADD,CMP,BNE instructions. */
-static void cpuint_mul_func(struct perf_case *p_case, struct perf_stat *p_stat)
+static void cpufp_mul_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
-	struct cpuint_data *p_data = (struct cpuint_data*)p_case->data;
+	struct cpufp_data *p_data = (struct cpufp_data*)p_case->data;
 	int num = p_data->num;
 	register int loops = p_data->iterations;
-	register int i = 0, a = 1, b = 1, c = 1, d = 1, e = 1, f = 1;
+	register double i = 0, a = 1, b = 1, c = 1, d = 1, e = 1, f = 1;
 	if (num < 1 || num > 6) {
 		printf("ERROR: Only support n from 1 to 6.\n");
 		return;
@@ -165,14 +165,14 @@ static void cpuint_mul_func(struct perf_case *p_case, struct perf_stat *p_stat)
 }
 #pragma GCC pop_options
 
-PERF_CASE_DEFINE(cpuint_mul) = {
-	.name = "cpuint_mul",
+PERF_CASE_DEFINE(cpufp_mul) = {
+	.name = "cpufp_mul",
 	.desc = "simple mul loop.",
-	.init = cpuint_init,
-	.exit = cpuint_exit,
-	.func = cpuint_mul_func,
-	.getopt = cpuint_getopt,
-	.opts = cpuint_opts,
-	.opts_num = sizeof(cpuint_opts) / sizeof(struct perf_option),
+	.init = cpufp_init,
+	.exit = cpufp_exit,
+	.func = cpufp_mul_func,
+	.getopt = cpufp_getopt,
+	.opts = cpufp_opts,
+	.opts_num = sizeof(cpufp_opts) / sizeof(struct perf_option),
 	.inner_stat = true
 };

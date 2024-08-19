@@ -251,6 +251,8 @@ static struct perf_case *perf_cases[] = {
 	PERF_CASE(memlat_random),
 	PERF_CASE(cpuint_add),
 	PERF_CASE(cpuint_mul),
+	PERF_CASE(cpufp_add),
+	PERF_CASE(cpufp_mul),
 };
 
 struct perf_case* perf_case_find(char* name)
@@ -504,7 +506,7 @@ static void init_cpu(int cpu)
 		printf("ERROR: Set cpu affinity failed.\n");
 		exit(0);
 	}
-	
+
 	printf("Run on CPU: %d\n", cpu);
 }
 

@@ -80,5 +80,7 @@ PERF_CASE_DECLARE(membw_cp_8_4x);
 PERF_CASE_DECLARE(memlat_random);
 PERF_CASE_DECLARE(cpuint_add);
 PERF_CASE_DECLARE(cpuint_mul);
+PERF_CASE_DECLARE(cpufp_add);
+PERF_CASE_DECLARE(cpufp_mul);
 
 #endif
