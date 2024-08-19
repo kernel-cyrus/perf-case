@@ -71,7 +71,7 @@ static void cpufp_add_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	struct cpufp_data *p_data = (struct cpufp_data*)p_case->data;
 	int num = p_data->num;
-	register int loops = p_data->iterations;
+	register int i = 0, loops = p_data->iterations;
 	register double a = 0, b = 0, c = 0, d = 0, e = 0, f = 0;
 	if (num < 1 || num > 6) {
 		printf("ERROR: Only support n from 1 to 6.\n");
@@ -79,28 +79,28 @@ static void cpufp_add_func(struct perf_case *p_case, struct perf_stat *p_stat)
 	}
 	perf_stat_begin(p_stat);
 	if (num == 1) {
-		while(a < loops) {
-			a++;
+		while(i < loops) {
+			i++; a++;
 		}
 	} else if (num == 2) {
-		while(a < loops) {
-			a++; b++;
+		while(i < loops) {
+			i++; a++; b++;
 		}
 	} else if (num == 3) {
-		while(a < loops) {
-			a++; b++; c++;
+		while(i < loops) {
+			i++; a++; b++; c++;
 		}
 	} else if (num == 4) {
-		while(a < loops) {
-			a++; b++; c++; d++;
+		while(i < loops) {
+			i++; a++; b++; c++; d++;
 		}
 	} else if (num == 5) {
-		while(a < loops) {
-			a++; b++; c++; d++; e++;
+		while(i < loops) {
+			i++; a++; b++; c++; d++; e++;
 		}
 	} else if (num == 6) {
-		while(a < loops) {
-			a++; b++; c++; d++; e++; f++;
+		while(i < loops) {
+			i++; a++; b++; c++; d++; e++; f++;
 		}
 	}
 	perf_stat_end(p_stat);
@@ -128,8 +128,8 @@ static void cpufp_mul_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	struct cpufp_data *p_data = (struct cpufp_data*)p_case->data;
 	int num = p_data->num;
-	register int loops = p_data->iterations;
-	register double i = 0, a = 1, b = 1, c = 1, d = 1, e = 1, f = 1;
+	register int i = 0, loops = p_data->iterations;
+	register double a = 1, b = 1, c = 1, d = 1, e = 1, f = 1;
 	if (num < 1 || num > 6) {
 		printf("ERROR: Only support n from 1 to 6.\n");
 		return;
@@ -137,27 +137,27 @@ static void cpufp_mul_func(struct perf_case *p_case, struct perf_stat *p_stat)
 	perf_stat_begin(p_stat);
 	if (num == 1) {
 		while(i < loops) {
-			i++; a *= i;
+			i++; a *= 3;
 		}
 	} else if (num == 2) {
 		while(i < loops) {
-			i++; a *= i; b *= i;
+			i++; a *= 3; b *= 3;
 		}
 	} else if (num == 3) {
 		while(i < loops) {
-			i++; a *= i; b *= i; c *= i;
+			i++; a *= 3; b *= 3; c *= 3;
 		}
 	} else if (num == 4) {
 		while(i < loops) {
-			i++; a *= i; b *= i; c *= i; d *= i;
+			i++; a *= 3; b *= 3; c *= 3; d *= 3;
 		}
 	} else if (num == 5) {
 		while(i < loops) {
-			i++; a *= i; b *= i; c *= i; d *= i; e *= i;
+			i++; a *= 3; b *= 3; c *= 3; d *= 3; e *= 3;
 		}
 	} else if (num == 6) {
 		while(i < loops) {
-			i++; a *= i; b *= i; c *= i; d *= i; e *= i; f *= i;
+			i++; a *= 3; b *= 3; c *= 3; d *= 3; e *= 3; f *= 3;
 		}
 	}
 	perf_stat_end(p_stat);
