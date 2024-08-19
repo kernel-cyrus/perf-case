@@ -253,6 +253,8 @@ static struct perf_case *perf_cases[] = {
 	PERF_CASE(cpuint_mul),
 	PERF_CASE(cpufp_add),
 	PERF_CASE(cpufp_mul),
+	PERF_CASE(cpusimd_add),
+	PERF_CASE(cpusimd_mul),
 };
 
 struct perf_case* perf_case_find(char* name)

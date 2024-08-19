@@ -82,5 +82,8 @@ PERF_CASE_DECLARE(cpuint_add);
 PERF_CASE_DECLARE(cpuint_mul);
 PERF_CASE_DECLARE(cpufp_add);
 PERF_CASE_DECLARE(cpufp_mul);
+PERF_CASE_DECLARE(cpusimd_add);
+PERF_CASE_DECLARE(cpusimd_mul);
+
 
 #endif
