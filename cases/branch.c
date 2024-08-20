@@ -1,20 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "../perf_stat.h"
 #include "../perf_case.h"
 
 struct branch_data {
 	int num;
+	int pattern;
 	int iterations;
 };
 
+typedef enum {
+	BR_PAT_FIXED,
+	BR_PAT_RANDOM
+} branch_pattern;
+
 static int opt_num = 1;
+static int opt_pattern = BR_PAT_FIXED;
 static int opt_iterations = 1000000;
 
-static struct perf_option branch_opts[] = {
+static struct perf_option branch_next_opts[] = {
 	{{"num", optional_argument, NULL, 'n' }, "n:", "Branches per loop. n = 2^[0~14]"},
+	{{"iterations", optional_argument, NULL, 'i' }, "i:", "Iteration loops. (default: 1000K)"},
+};
+
+static struct perf_option branch_pred_opts[] = {
+	{{"pattern", optional_argument, NULL, 'p' }, "p:", "Branch pattern: fixed | random"},
 	{{"iterations", optional_argument, NULL, 'i' }, "i:", "Iteration loops. (default: 1000K)"},
 };
 
@@ -23,6 +36,16 @@ static int branch_getopt(struct perf_case* p_case, int opt)
 	switch (opt) {
 	case 'n':
 		opt_num = atoi(optarg);
+		break;
+	case 'p':
+		if (!strcmp(optarg, "fixed")) {
+			opt_pattern = BR_PAT_FIXED;
+		} else if (!strcmp(optarg, "random")) {
+			opt_pattern = BR_PAT_RANDOM;
+		} else {
+			printf("ERROR: Invalid pattern, only support \"fixed\" or \"random\".\n");
+			exit(0);
+		}
 		break;
 	case 'i':
 		opt_iterations = atoi(optarg);
@@ -50,10 +73,8 @@ static int branch_init(struct perf_case *p_case, struct perf_stat *p_stat, int a
 	p_data = (struct branch_data*)p_case->data;
 
 	p_data->num = opt_num;
+	p_data->pattern = opt_pattern;
 	p_data->iterations = opt_iterations;
-
-	printf("branches per loop: %d\n", p_data->num);
-	printf("iterations: %d\n", p_data->iterations);
 
 	return SUCCESS;
 }
@@ -105,6 +126,8 @@ static void branch_next_func(struct perf_case *p_case, struct perf_stat *p_stat)
 	struct branch_data *p_data = (struct branch_data*)p_case->data;
 	int num = p_data->num, err = 0;
 	register int i = 0, loops = p_data->iterations;
+	printf("branches per loop: %d\n", p_data->num);
+	printf("iterations: %d\n", p_data->iterations);
 	perf_stat_begin(p_stat);
 	if (num == 1) {
 		while (i < loops) {
@@ -269,54 +292,58 @@ PERF_CASE_DEFINE(branch_next) = {
 	.exit = branch_exit,
 	.func = branch_next_func,
 	.getopt = branch_getopt,
-	.opts = branch_opts,
-	.opts_num = sizeof(branch_opts) / sizeof(struct perf_option),
+	.opts = branch_next_opts,
+	.opts_num = sizeof(branch_next_opts) / sizeof(struct perf_option),
 	.inner_stat = true
 };
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
-static void branch_random_func(struct perf_case *p_case, struct perf_stat *p_stat)
+static void branch_pred_func(struct perf_case *p_case, struct perf_stat *p_stat)
 {
 	struct branch_data *p_data = (struct branch_data*)p_case->data;
-	int num = p_data->num, err = 0;
+	int pattern = p_data->pattern; 
 	register int i = 0, loops = p_data->iterations;
-	register int sum = 1;
-	perf_stat_begin(p_stat);
-	if (num == 1) {
-		while (i < loops) {
-			if ((i & 0x3) == (sum & 0x3))
-				sum++;
-			if ((i & 0x3) == (sum & 0x3))
-				sum++;
-			if ((i & 0x3) == (sum & 0x3))
-				sum++;
-			if ((i & 0x3) == (sum & 0x3))
-				sum++;
-			i++;
-		}
-	} else {
-		err = 1;
-	}
-	perf_stat_end(p_stat);
-	if (err) {
-		printf("ERROR: Only support n = 2^[0~14]\n");
+	register int sum = 0;
+	register char* deciecions;
+	deciecions = malloc(loops);
+	if (!deciecions) {
+		printf("ERROR: malloc failed.\n");
 		exit(0);
 	}
-	printf("pred: %d, taken: %d\n", i * 8, sum);
-	/* Consume the data to avoid compiler optimizing. */
-	use_it(i);
+	if (pattern == BR_PAT_FIXED) {
+		printf("br pattern: fixed\n");
+		for (i = 0; i < loops; i++)
+			deciecions[i] = i % 2;
+	} else if (pattern == BR_PAT_RANDOM) {
+		printf("br pattern: random\n");
+		srand(1);
+		for (i = 0; i < loops; i++)
+			deciecions[i] = random() % 2;
+	} else {
+		printf("ERROR: Invalid pattern, only support \"fixed\" or \"random\".\n");
+		free(deciecions);
+		exit(0);
+	}
+	printf("iterations: %d\n", p_data->iterations);
+	perf_stat_begin(p_stat);
+	for (i = 0; i < loops; i++)
+		if (deciecions[i])
+			sum++;
+	perf_stat_end(p_stat);
+	printf("pred: %d, taken: %d\n", i, sum);
+	free(deciecions);
 }
 #pragma GCC pop_options
 
-PERF_CASE_DEFINE(branch_random) = {
-	.name = "branch_random",
-	.desc = "jump to random instruction for n times.",
+PERF_CASE_DEFINE(branch_pred) = {
+	.name = "branch_pred",
+	.desc = "if loop with fixed/random condition pattern.",
 	.init = branch_init,
 	.exit = branch_exit,
-	.func = branch_random_func,
+	.func = branch_pred_func,
 	.getopt = branch_getopt,
-	.opts = branch_opts,
-	.opts_num = sizeof(branch_opts) / sizeof(struct perf_option),
+	.opts = branch_pred_opts,
+	.opts_num = sizeof(branch_pred_opts) / sizeof(struct perf_option),
 	.inner_stat = true
 };
