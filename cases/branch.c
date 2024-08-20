@@ -14,7 +14,7 @@ static int opt_num = 1;
 static int opt_iterations = 1000000;
 
 static struct perf_option branch_opts[] = {
-	{{"num", optional_argument, NULL, 'n' }, "n:", "Operations per loop. (n: 1-6)"},
+	{{"num", optional_argument, NULL, 'n' }, "n:", "Branches per loop. n = 2^[0~14]"},
 	{{"iterations", optional_argument, NULL, 'i' }, "i:", "Iteration loops. (default: 1000K)"},
 };
 
@@ -33,6 +33,12 @@ static int branch_getopt(struct perf_case* p_case, int opt)
 	return SUCCESS;
 }
 
+static void use_it(int a)
+{
+	static int use = 0;
+	use += a;
+}
+
 static int branch_init(struct perf_case *p_case, struct perf_stat *p_stat, int argc, char *argv[])
 {
 	struct branch_data *p_data;
@@ -46,6 +52,7 @@ static int branch_init(struct perf_case *p_case, struct perf_stat *p_stat, int a
 	p_data->num = opt_num;
 	p_data->iterations = opt_iterations;
 
+	printf("branches per loop: %d\n", p_data->num);
 	printf("iterations: %d\n", p_data->iterations);
 
 	return SUCCESS;
@@ -106,27 +113,113 @@ static void branch_next_func(struct perf_case *p_case, struct perf_stat *p_stat)
 			);
 			i++;
 		}
+	} else if (num == 2) {
+		while (i < loops) {
+			__asm__ volatile (
+				JUMP1(0x0, 0x0, 0x0, 0x1)
+				JUMP1(0x0, 0x0, 0x0, 0x2)
+			);
+			i++;
+		}
+	} else if (num == 4) {
+		while (i < loops) {
+			__asm__ volatile (
+				JUMP1(0x0, 0x0, 0x0, 0x3)
+				JUMP1(0x0, 0x0, 0x0, 0x4)
+				JUMP1(0x0, 0x0, 0x0, 0x5)
+				JUMP1(0x0, 0x0, 0x0, 0x6)
+			);
+			i++;
+		}
+	} else if (num == 8) {
+		while (i < loops) {
+			__asm__ volatile (
+				JUMP1(0x0, 0x0, 0x0, 0x7)
+				JUMP1(0x0, 0x0, 0x0, 0x8)
+				JUMP1(0x0, 0x0, 0x0, 0x9)
+				JUMP1(0x0, 0x0, 0x0, 0xA)
+				JUMP1(0x0, 0x0, 0x0, 0xB)
+				JUMP1(0x0, 0x0, 0x0, 0xC)
+				JUMP1(0x0, 0x0, 0x0, 0xD)
+				JUMP1(0x0, 0x0, 0x0, 0xE)
+			);
+			i++;
+		}
 	} else if (num == 16) {
 		while (i < loops) {
 			__asm__ volatile (
-				JUMP16(0x1, 0x0, 0x0)
+				JUMP16(0x0, 0x0, 0x1)
+			);
+			i++;
+		}
+	} else if (num == 32) {
+		while (i < loops) {
+			__asm__ volatile (
+				JUMP16(0x0, 0x0, 0x2)
+				JUMP16(0x0, 0x0, 0x3)
+			);
+			i++;
+		}
+	} else if (num == 64) {
+		while (i < loops) {
+			__asm__ volatile (
+				JUMP16(0x0, 0x0, 0x4)
+				JUMP16(0x0, 0x0, 0x5)
+				JUMP16(0x0, 0x0, 0x6)
+				JUMP16(0x0, 0x0, 0x7)
+			);
+			i++;
+		}
+	} else if (num == 128) {
+		while (i < loops) {
+			__asm__ volatile (
+				JUMP16(0x0, 0x0, 0x8)
+				JUMP16(0x0, 0x0, 0x9)
+				JUMP16(0x0, 0x0, 0xA)
+				JUMP16(0x0, 0x0, 0xB)
+				JUMP16(0x0, 0x0, 0xC)
+				JUMP16(0x0, 0x0, 0xD)
+				JUMP16(0x0, 0x0, 0xE)
+				JUMP16(0x0, 0x0, 0xF)
 			);
 			i++;
 		}
 	} else if (num == 256) {
 		while (i < loops) {
 			__asm__ volatile (
-				JUMP256(0x2, 0x0)
+				JUMP256(0x0, 0x1)
+			);
+			i++;
+		}
+	} else if (num == 512) {
+		while (i < loops) {
+			__asm__ volatile (
+				JUMP256(0x0, 0x2)
+				JUMP256(0x0, 0x3)
 			);
 			i++;
 		}
 	} else if (num == 1024) {
 		while (i < loops) {
 			__asm__ volatile (
-				JUMP256(0x3, 0x0)
-				JUMP256(0x3, 0x1)
-				JUMP256(0x3, 0x2)
-				JUMP256(0x3, 0x3)
+				JUMP256(0x0, 0x4)
+				JUMP256(0x0, 0x5)
+				JUMP256(0x0, 0x6)
+				JUMP256(0x0, 0x7)
+			);
+			i++;
+		}
+	} else if (num == 2048) {
+		while (i < loops) {
+			__asm__ volatile (
+				JUMP256(0x0, 0x8)
+				JUMP256(0x0, 0x9)
+				JUMP256(0x0, 0xA)
+				JUMP256(0x0, 0xB)
+				JUMP256(0x0, 0xC)
+				JUMP256(0x0, 0xD)
+				JUMP256(0x0, 0xE)
+				JUMP256(0x0, 0xF)
 			);
 			i++;
 		}
@@ -134,15 +227,25 @@ static void branch_next_func(struct perf_case *p_case, struct perf_stat *p_stat)
 		while (i < loops) {
 			__asm__ volatile (
 				
-				JUMP4096(0x4)
+				JUMP4096(0x1)
 			);
 			i++;
 		}
 	} else if (num == 8192) {
 		while (i < loops) {
 			__asm__ volatile (
+				JUMP4096(0x2)
+				JUMP4096(0x3)
+			);
+			i++;
+		}
+	} else if (num == 16384) {
+		while (i < loops) {
+			__asm__ volatile (
+				JUMP4096(0x4)
 				JUMP4096(0x5)
 				JUMP4096(0x6)
+				JUMP4096(0x7)
 			);
 			i++;
 		}
@@ -151,11 +254,11 @@ static void branch_next_func(struct perf_case *p_case, struct perf_stat *p_stat)
 	}
 	perf_stat_end(p_stat);
 	if (err) {
-		printf("ERROR: Only support n = [1, 16, 256, 1024, 4096, 8192]\n");
+		printf("ERROR: Only support n = 2^[0~14]\n");
 		exit(0);
 	}
 	/* Consume the data to avoid compiler optimizing. */
-	printf("%d", i);
+	use_it(i);
 }
 #pragma GCC pop_options
 

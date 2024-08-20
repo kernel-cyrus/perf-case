@@ -52,8 +52,8 @@ static int cpuint_init(struct perf_case *p_case, struct perf_stat *p_stat, int a
 	p_data->num = opt_num;
 	p_data->iterations = opt_iterations;
 
-	printf("iterations: %d\n", p_data->iterations);
 	printf("num per loop: %d\n", p_data->num);
+	printf("iterations: %d\n", p_data->iterations);
 
 	return SUCCESS;
 }
