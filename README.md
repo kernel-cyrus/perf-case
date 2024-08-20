@@ -3,7 +3,7 @@ Perf case is a simple perf event test framework with some interesting testcases 
 
 You can simply run one case and collect all the PMU events or write testcase of your own.
 
-![image](https://github.com/user-attachments/assets/5deb3ccc-82a9-4186-a23a-74fe656d1a92)
+![截屏2024-08-20 17 35 32](https://github.com/user-attachments/assets/fcbc5d54-3050-49bd-89b2-e735f0fc773e)
 
 # Run a simple case
 
