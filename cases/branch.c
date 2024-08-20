@@ -273,3 +273,50 @@ PERF_CASE_DEFINE(branch_next) = {
 	.opts_num = sizeof(branch_opts) / sizeof(struct perf_option),
 	.inner_stat = true
 };
+
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+static void branch_random_func(struct perf_case *p_case, struct perf_stat *p_stat)
+{
+	struct branch_data *p_data = (struct branch_data*)p_case->data;
+	int num = p_data->num, err = 0;
+	register int i = 0, loops = p_data->iterations;
+	register int sum = 1;
+	perf_stat_begin(p_stat);
+	if (num == 1) {
+		while (i < loops) {
+			if ((i & 0x3) == (sum & 0x3))
+				sum++;
+			if ((i & 0x3) == (sum & 0x3))
+				sum++;
+			if ((i & 0x3) == (sum & 0x3))
+				sum++;
+			if ((i & 0x3) == (sum & 0x3))
+				sum++;
+			i++;
+		}
+	} else {
+		err = 1;
+	}
+	perf_stat_end(p_stat);
+	if (err) {
+		printf("ERROR: Only support n = 2^[0~14]\n");
+		exit(0);
+	}
+	printf("pred: %d, taken: %d\n", i * 8, sum);
+	/* Consume the data to avoid compiler optimizing. */
+	use_it(i);
+}
+#pragma GCC pop_options
+
+PERF_CASE_DEFINE(branch_random) = {
+	.name = "branch_random",
+	.desc = "jump to random instruction for n times.",
+	.init = branch_init,
+	.exit = branch_exit,
+	.func = branch_random_func,
+	.getopt = branch_getopt,
+	.opts = branch_opts,
+	.opts_num = sizeof(branch_opts) / sizeof(struct perf_option),
+	.inner_stat = true
+};
