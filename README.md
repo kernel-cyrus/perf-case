@@ -35,7 +35,7 @@ Set param for a case (set buffer size and stride)
 
 Run on specified CPU (CPU 1)
 
-`./perf_case membw_rd_1 -c 1``
+`./perf_case membw_rd_1 -c 1`
 
 # Write Case
 
