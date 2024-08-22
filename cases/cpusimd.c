@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <arm_neon.h>
 
-#include "../perf_stat.h"
-#include "../perf_case.h"
+#include "perf_stat.h"
+#include "perf_case.h"
 
 struct cpusimd_data {
 	int num;

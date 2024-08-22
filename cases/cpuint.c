@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "../perf_stat.h"
-#include "../perf_case.h"
+#include "perf_stat.h"
+#include "perf_case.h"
 
 struct cpuint_data {
 	int num;

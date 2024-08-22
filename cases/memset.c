@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include <sys/mman.h>
 
-#include "../perf_stat.h"
-#include "../perf_case.h"
+#include "perf_stat.h"
+#include "perf_case.h"
 
 #define STATIC_BUF_SIZE		(4 * 4096)
 #define DYNAMIC_BUF_SIZE	(128 * 1024 * 1024)

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "../perf_stat.h"
-#include "../perf_case.h"
+#include "perf_stat.h"
+#include "perf_case.h"
 
 struct cpufp_data {
 	int num;
@@ -119,7 +119,6 @@ PERF_CASE_DEFINE(cpufp_add) = {
 	.opts_num = sizeof(cpufp_opts) / sizeof(struct perf_option),
 	.inner_stat = true
 };
-
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")

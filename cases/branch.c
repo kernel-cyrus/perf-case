@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../perf_stat.h"
-#include "../perf_case.h"
+#include "perf_stat.h"
+#include "perf_case.h"
 
 struct branch_data {
 	int num;

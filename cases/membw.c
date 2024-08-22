@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <getopt.h>
 
-#include "../perf_stat.h"
-#include "../perf_case.h"
+#include "perf_stat.h"
+#include "perf_case.h"
 
 #define BUF_SIZE (128 * 1024 * 1024)
 
@@ -325,7 +325,7 @@ static void membw_cp_8_4x(struct perf_case *p_case, struct perf_stat *p_stat)
 		.init = membw_init,						\
 		.exit = membw_exit,						\
 		.func = _name,							\
-		.getopt = membw_getopt,					\
+		.getopt = membw_getopt,						\
 		.opts = membw_opts,						\
 		.opts_num = sizeof(membw_opts) / sizeof(struct perf_option),	\
 		.events = membw_events,						\

@@ -257,6 +257,29 @@ static struct perf_case *perf_cases[] = {
 	PERF_CASE(cpusimd_mul),
 	PERF_CASE(branch_pred),
 	PERF_CASE(branch_next),
+	PERF_CASE(ustress_branch_direct),
+	PERF_CASE(ustress_branch_indirect),
+	PERF_CASE(ustress_call_return),
+	PERF_CASE(ustress_div32),
+	PERF_CASE(ustress_div64),
+	PERF_CASE(ustress_double2int),
+	PERF_CASE(ustress_fpdiv),
+	PERF_CASE(ustress_fpmac),
+	PERF_CASE(ustress_fpmul),
+	PERF_CASE(ustress_fpsqrt),
+	PERF_CASE(ustress_int2double),
+	PERF_CASE(ustress_isb),
+	PERF_CASE(ustress_l1d_cache),
+	PERF_CASE(ustress_l1d_tlb),
+	PERF_CASE(ustress_l1i_cache),
+	PERF_CASE(ustress_l2d_cache),
+	PERF_CASE(ustress_load_after_store),
+	PERF_CASE(ustress_mac32),
+	PERF_CASE(ustress_mac64),
+	PERF_CASE(ustress_memcpy),
+	PERF_CASE(ustress_mul32),
+	PERF_CASE(ustress_mul64),
+	PERF_CASE(ustress_store_buffer_full),
 };
 
 struct perf_case* perf_case_find(char* name)
@@ -458,7 +481,7 @@ static void print_help()
 	printf("Cases Available:\n");
 	for (int i = 0; i < case_num; i++) {
 		p_case = perf_cases[i];
-		printf("    %-20s - %s\n", p_case->name, p_case->desc);
+		printf("    %-26s - %s\n", p_case->name, p_case->desc);
 	}
 	printf("\n");
 }

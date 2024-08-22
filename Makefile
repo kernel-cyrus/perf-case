@@ -1,13 +1,17 @@
 CC = gcc
-CFLAGS = -O2 -g -Wall
+
+INCLUDE = "./"
+HEADERS = $(wildcard *.h)
+SOURCES = $(wildcard *.c cases/*.c cases/ustress/*.c)
+OBJS = $(SOURCES:.c=.o)
 TARGET = perf_case
-SRCS = perf_stat.c cases/memset.c cases/membw.c cases/memlat.c cases/cpuint.c cases/cpufp.c cases/cpusimd.c cases/branch.c perf_case.c
-OBJS = $(SRCS:.c=.o)
+
+CFLAGS = -O2 -g -Wall -I$(INCLUDE)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) -lm
 
-%.o: %.c
+%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean

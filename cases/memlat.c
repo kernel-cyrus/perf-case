@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <getopt.h>
 
-#include "../perf_stat.h"
-#include "../perf_case.h"
+#include "perf_stat.h"
+#include "perf_case.h"
 
 #define BUF_SIZE (128 * 1024 * 1024)
 
